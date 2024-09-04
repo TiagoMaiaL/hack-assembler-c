@@ -1,0 +1,7 @@
+# Mac related files
+**/.DS_Store
+
+# Vim files
+*.swp
+*.swo
+*~
