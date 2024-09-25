@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #define ON        '1'
 #define OFF       '0'
@@ -13,10 +14,9 @@ struct cinst {
 // TODO: Use the functions in stdlib
 short streq(char *, char *);
 short strin(char, char *);
-void strcp(char *from, char *to);
 
 // TODO: Document each one of these functions.
-void instbin(struct cinst, char *bin);
+void cinstbin(char *, struct cinst);
 void compbin(char * instcomp, char * bin);
 void destbin(char[], char[]);
 void jmpbin(char[], char[]);
@@ -162,40 +162,36 @@ int main()
     inst.val = "123";
 
     char bin[WORD_SIZE];
-
     ainstbin(inst, bin);
-    
     printf("@123 in binary = %s\n", bin);
+
+    struct cinst inst2;
+    inst2.dest = "A";
+    inst2.comp = "-1";
+
+    char cbin[WORD_SIZE];
+    cinstbin(cbin, inst2);
+
+    printf("A = -1 in binary = %s\n", cbin);
 
     return 0;
 }
 
-void instbin(struct cinst comp, char *bin)
+void cinstbin(char *bin, struct cinst comp)
 {
-    strcp("111", bin);
+    strcpy(bin, "111");
 
     char compbinary[8];
     compbin(comp.comp, compbinary);
-    strcp(compbinary, bin + 3);
+    strcpy(bin + 3, compbinary);
 
     char destbinary[4];
     destbin(comp.dest, destbinary);
-    strcp(destbinary, bin + 3 + 7);
+    strcpy(bin + 3 + 7, destbinary);
 
     char jmpbinary[4];
     jmpbin(comp.jmp, jmpbinary);
-    strcp(jmpbinary, bin + 3 + 7 + 3);
-}
-
-void strcp(char *from, char *to)
-{
-    int i;
-
-    for (i = 0; from[i] != '\0'; ++i) {
-        to[i] = from[i];
-    }
-
-    to[i] = '\0';
+    strcpy(bin + 3 + 7 + 3, jmpbinary);
 }
 
 short strin(char c, char *str)
@@ -222,58 +218,58 @@ void compbin(char * instcomp, char * bin)
     bin += 1;
 
     if (streq(instcomp, "0")) {
-        strcp("101010", bin);
+        strcpy(bin, "101010");
 
     } else if (streq(instcomp, "1")) {
-        strcp("111111", bin);
+        strcpy(bin, "111111");
 
     } else if (streq(instcomp, "-1")) {
-        strcp("111010", bin);
+        strcpy(bin, "111010");
    
     } else if (streq(instcomp, "D")) {
-        strcp("001100", bin);
+        strcpy(bin, "001100");
  
     } else if (streq(instcomp, "A") || streq(instcomp, "M")) {
-        strcp("110000", bin);
+        strcpy(bin, "110000");
 
     } else if (streq(instcomp, "!D")) {
-        strcp("001101", bin);
+        strcpy(bin, "001101");
 
     } else if (streq(instcomp, "!A") || streq(instcomp, "!M")) {
-        strcp("110001", bin);
+        strcpy(bin, "110001");
 
     } else if (streq(instcomp, "-D")) {
-        strcp("001111", bin);
+        strcpy(bin, "001111");
 
     } else if (streq(instcomp, "-A") || streq(instcomp, "-M")) {
-        strcp("110011", bin);
+        strcpy(bin, "110011");
 
     } else if (streq(instcomp, "D+1")) {
-        strcp("011111", bin);
+        strcpy(bin, "011111");
 
     } else if (streq(instcomp, "A+1") || streq(instcomp, "M+1")) {
-        strcp("110111", bin);
+        strcpy(bin, "110111");
 
     } else if (streq(instcomp, "D-1")) {
-        strcp("001110", bin);
+        strcpy(bin, "001110");
 
     } else if (streq(instcomp, "A-1") || streq(instcomp, "M-1")) {
-        strcp("110010", bin);
+        strcpy(bin, "110010");
 
     } else if (streq(instcomp, "D+A") || streq(instcomp, "D+M")) {
-        strcp("000010", bin);
+        strcpy(bin, "000010");
 
     } else if (streq(instcomp, "D-A") || streq(instcomp, "D-M")) {
-        strcp("010011", bin);
+        strcpy(bin, "010011");
 
     } else if (streq(instcomp, "A-D") || streq(instcomp, "M-D")) {
-        strcp("000111", bin);
+        strcpy(bin, "000111");
 
     } else if (streq(instcomp, "D&A") || streq(instcomp, "D&M")) {
-        strcp("000000", bin);
+        strcpy(bin, "000000");
 
     } else if (streq(instcomp, "D|A") || streq(instcomp, "D|M")) {
-        strcp("010101", bin);
+        strcpy(bin, "010101");
     }
 }
 
