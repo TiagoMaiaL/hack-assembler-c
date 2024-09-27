@@ -7,15 +7,23 @@
 #define OFF       '0'
 #define WORD_SIZE 16
 
+// -----------------------
+// Instruction definitions
+// -----------------------
+
 struct cinst {
     char * dest;
     char * comp;
     char * jmp;
 };
 
-short streq(char *, char *);
-short strin(char *, char);
-void strrev(char *);
+struct ainst {
+    char * val;
+};
+
+// ---------------------------------
+// Conversion functions declarations 
+// ---------------------------------
 
 // TODO: Document each one of these functions.
 void cinstbin(char *, struct cinst);
@@ -23,12 +31,56 @@ void compbin(char * instcomp, char * bin);
 void destbin(char[], char[]);
 void jmpbin(char[], char[]);
 
-struct ainst {
-    char * val;
-};
-
 void itobin(int, char *, int);
 void ainstbin(struct ainst, char *);
+
+// -----------------------------
+// Helper functions declarations
+// -----------------------------
+
+short streq(char *, char *);
+short strin(char *, char);
+void strrev(char *);
+
+// -----------------------------
+// main
+// -----------------------------
+
+int main()
+{
+    // For MVP:
+    // 1. Parse input text into tokens
+    // 2. Parse tokens into instructions or errors
+    // 3. Translate instructions into bin code
+    struct ainst inst;
+    inst.val = "123";
+
+    char bin[WORD_SIZE];
+    ainstbin(inst, bin);
+    printf("@123 in binary = %s\n", bin);
+
+    struct cinst inst2;
+    inst2.dest = "A";
+    inst2.comp = "M+1";
+
+    char cbin[WORD_SIZE];
+    cinstbin(cbin, inst2);
+
+    printf("A = -1 in binary = %s\n", cbin);
+
+    return 0;
+}
+
+// -----------------------------------
+// a-instruction translation functions
+// -----------------------------------
+
+void ainstbin(struct ainst inst, char *bin)
+{
+    char *valstr = inst.val;
+    int val = atoi(valstr);
+    itobin(val, bin, WORD_SIZE);
+}
 
 void itobin(int val, char *bin, int bincount) {
     int i, res, rem;
@@ -64,67 +116,9 @@ void itobin(int val, char *bin, int bincount) {
     strrev(bin);
 }
 
-void strrev(char * str)
-{
-    int len;
-
-    len = 0;
-
-    while (str[len] != '\0') {
-        ++len;
-    }
-
-    int left;
-    int right;
-
-    left = 0;
-    right = len - 1;
-
-    while (left < right) {
-        int leftval, temp;
-
-        leftval = str[left];
-        temp = str[right];
-
-        str[left] = temp;
-        str[right] = leftval;
-
-        ++left;
-        --right;
-    }
-}
-
-void ainstbin(struct ainst inst, char *bin)
-{
-    char *valstr = inst.val;
-    int val = atoi(valstr);
-    itobin(val, bin, WORD_SIZE);
-}
-
-int main()
-{
-    // For MVP:
-    // 1. Parse input text into tokens
-    // 2. Parse tokens into instructions or errors
-    // 3. Translate instructions into bin code
-    struct ainst inst;
-    inst.val = "123";
-
-    char bin[WORD_SIZE];
-    ainstbin(inst, bin);
-    printf("@123 in binary = %s\n", bin);
-
-    struct cinst inst2;
-    inst2.dest = "A";
-    inst2.comp = "M+1";
-
-    char cbin[WORD_SIZE];
-    cinstbin(cbin, inst2);
-
-    printf("A = -1 in binary = %s\n", cbin);
-
-    return 0;
-}
+// -----------------------------------
+// c-instruction translation functions
+// -----------------------------------
 
 void cinstbin(char *bin, struct cinst comp)
 {
@@ -141,11 +135,6 @@ void cinstbin(char *bin, struct cinst comp)
     char jmpbinary[4];
     jmpbin(comp.jmp, jmpbinary);
     strcpy(bin + 3 + 7 + 3, jmpbinary);
-}
-
-short strin(char *s, char c)
-{
-    return strchr(s, c) != NULL;
 }
 
 void compbin(char * instcomp, char * bin)
@@ -244,11 +233,6 @@ void destbin(char instdest[], char bin[])
     bin[DEST_MAX_LEN] = '\0';
 }
 
-short streq(char *l, char *r)
-{
-    return strcmp(l, r) == 0;
-}
-
 #define JMP_MAX_LEN 3
 
 void jmpbin(char instjmp[], char bin[])
@@ -280,5 +264,49 @@ void jmpbin(char instjmp[], char bin[])
     }
 
     bin[3] = '\0';
+}
+
+// ----------------------
+// Helpers implementation
+// ----------------------
+
+short strin(char *s, char c)
+{
+    return strchr(s, c) != NULL;
+}
+
+void strrev(char * str)
+{
+    int len;
+
+    len = 0;
+
+    while (str[len] != '\0') {
+        ++len;
+    }
+
+    int left;
+    int right;
+
+    left = 0;
+    right = len - 1;
+
+    while (left < right) {
+        int leftval, temp;
+
+        leftval = str[left];
+        temp = str[right];
+
+        str[left] = temp;
+        str[right] = leftval;
+
+        ++left;
+        --right;
+    }
+}
+
+short streq(char *l, char *r)
+{
+    return strcmp(l, r) == 0;
 }
 
