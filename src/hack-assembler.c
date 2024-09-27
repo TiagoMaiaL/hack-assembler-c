@@ -1,5 +1,7 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #define ON        '1'
 #define OFF       '0'
@@ -11,9 +13,9 @@ struct cinst {
     char * jmp;
 };
 
-// TODO: Use the functions in stdlib
 short streq(char *, char *);
-short strin(char, char *);
+short strin(char *, char);
+void strrev(char *);
 
 // TODO: Document each one of these functions.
 void cinstbin(char *, struct cinst);
@@ -25,71 +27,8 @@ struct ainst {
     char * val;
 };
 
-// TODO: Implement atoi and then use the function in stdlib
-int atoi(char *);
 void itobin(int, char *, int);
 void ainstbin(struct ainst, char *);
-int ipow(int, int);
-
-// TODO: Check if converting negative integers will be needed.
-int atoi(char *str)
-{
-    int c;
-    int i;
-    int count;
-
-    i = 0;
-    count = 0;
-    
-    while ((c = str[i]) != '\0') {
-        // Validate str (must contain only digits)
-        if (!(c >= '0' && c <= '9')) {
-            return -1; // Let's use -1 for now, until we find a better value to return here.
-        }
-        ++i;
-    }
-
-    count = i;
-    
-    short digits[i];
-
-    i = 0;
-
-    while ((c = str[i]) != '\0') {
-        short digit;
-
-        digit = c - '0';
-        digits[i] = digit;
-
-        ++i;
-    }
-
-    int result;
-    int end = count - 1;
-
-    for (i = end; i >= 0; --i) {
-        short digit = digits[i];
-        result += digit * ipow(10, end - i);
-    }
-
-    return result;
-}
-
-int ipow(int n, int exp)
-{
-    if (exp == 0)
-        return 1;
-    else if (exp == 1)
-        return n;
-    else {
-        long long result = 1;
-
-        for (int i = 0; i < exp; ++i)
-            result *= n;
-        
-        return result;
-    }
-}
 
 void itobin(int val, char *bin, int bincount) {
     int i, res, rem;
@@ -122,26 +61,36 @@ void itobin(int val, char *bin, int bincount) {
         ++i;
     }
 
-    // Reverse the bin string.
-    // TODO: Check if there's a stdlib function for this.
-    // TODO: If there's, replace this code with it.
-    // TODO: If not, extract this into a helper function.
-    if (i > 0) {
-        int left = 0;
-        int right = bincount - 1;
+    strrev(bin);
+}
 
-        while (left < right) {
-            int leftval, temp;
+void strrev(char * str)
+{
+    int len;
 
-            leftval = bin[left];
-            temp = bin[right];
+    len = 0;
 
-            bin[left] = temp;
-            bin[right] = leftval;
+    while (str[len] != '\0') {
+        ++len;
+    }
 
-            ++left;
-            --right;
-        }
+    int left;
+    int right;
+
+    left = 0;
+    right = len - 1;
+
+    while (left < right) {
+        int leftval, temp;
+
+        leftval = str[left];
+        temp = str[right];
+
+        str[left] = temp;
+        str[right] = leftval;
+
+        ++left;
+        --right;
     }
 }
 
@@ -167,7 +116,7 @@ int main()
 
     struct cinst inst2;
     inst2.dest = "A";
-    inst2.comp = "-1";
+    inst2.comp = "M+1";
 
     char cbin[WORD_SIZE];
     cinstbin(cbin, inst2);
@@ -194,22 +143,14 @@ void cinstbin(char *bin, struct cinst comp)
     strcpy(bin + 3 + 7 + 3, jmpbinary);
 }
 
-short strin(char c, char *str)
+short strin(char *s, char c)
 {
-    int i;
-
-    for (i = 0; str[i] != '\0'; ++i) {
-        if (str[i] == c) {
-            return 1;
-        }
-    }
-
-    return 0;
+    return strchr(s, c) != NULL;
 }
 
 void compbin(char * instcomp, char * bin)
 {
-    if (strin('M', instcomp)) {
+    if (strin(instcomp, 'M')) {
         bin[0] = ON;
     } else {
         bin[0] = OFF;
@@ -290,8 +231,10 @@ void destbin(char instdest[], char bin[])
     while (instdest[i] != '\0') {
         if (instdest[i] == 'A') {
             bin[A_DEST] = ON;
+
         } else if (instdest[i] == 'D') {
             bin[D_DEST] = ON;
+
         } else if (instdest[i] == 'M') {
             bin[M_DEST] = ON;
         }
@@ -301,21 +244,9 @@ void destbin(char instdest[], char bin[])
     bin[DEST_MAX_LEN] = '\0';
 }
 
-// TODO: Move helper functions to their own file.
 short streq(char *l, char *r)
 {
-    int i = 0;
-    short eq = 1;
-
-    while (l[i] == r[i] && l[i] != '\0' && eq == 1) {
-        eq = 1;
-        ++i;
-    }
-
-    if (l[i] != r[i])
-        eq = 0;
-
-    return eq;
+    return strcmp(l, r) == 0;
 }
 
 #define JMP_MAX_LEN 3
@@ -328,16 +259,22 @@ void jmpbin(char instjmp[], char bin[])
     if (streq(instjmp, "JMP")) {
         for (int i = 0; i < JMP_MAX_LEN; ++i)
             bin[i] = ON;
+
     } else if (streq(instjmp, "JGT")) {
         bin[2] = ON;
+
     } else if (streq(instjmp, "JEQ")) {
         bin[1] = ON;
+
     } else if (streq(instjmp, "JGE")) {
         bin[1] = bin[2] = ON;
+
     } else if (streq(instjmp, "JLT")) {
         bin[0] = ON;
+
     } else if (streq(instjmp, "JNE")) {
         bin[0] = bin[2] = ON;
+
     } else if (streq(instjmp, "JLE")) {
         bin[0] = bin[1] = ON;
     }
