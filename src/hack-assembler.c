@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include "utils.h"
 
 #define ON        '1'
 #define OFF       '0'
@@ -33,14 +34,6 @@ void jmpbin(char[], char[]);
 
 void itobin(int, char *, int);
 void ainstbin(struct ainst, char *);
-
-// -----------------------------
-// Helper functions declarations
-// -----------------------------
-
-short streq(char *, char *);
-short strin(char *, char);
-void strrev(char *);
 
 // -----------------------------------
 // a-instruction translation functions
@@ -235,49 +228,5 @@ void jmpbin(char instjmp[], char bin[])
     }
 
     bin[3] = '\0';
-}
-
-// ----------------------
-// Helpers implementation
-// ----------------------
-
-short strin(char *s, char c)
-{
-    return strchr(s, c) != NULL;
-}
-
-void strrev(char * str)
-{
-    int len;
-
-    len = 0;
-
-    while (str[len] != '\0') {
-        ++len;
-    }
-
-    int left;
-    int right;
-
-    left = 0;
-    right = len - 1;
-
-    while (left < right) {
-        int leftval, temp;
-
-        leftval = str[left];
-        temp = str[right];
-
-        str[left] = temp;
-        str[right] = leftval;
-
-        ++left;
-        --right;
-    }
-}
-
-short streq(char *l, char *r)
-{
-    return strcmp(l, r) == 0;
 }
 
