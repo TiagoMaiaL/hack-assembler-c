@@ -1,15 +1,7 @@
+#include "test.h"
 #include <stdio.h>
 #include <string.h>
-
-// Small library for performing assertions and running automated tests.
-
-// TODO: Move these to a header file.
-void tst_str_equals(char *a, char *b);
-void tst_int_equals(int a, int b);
-
-void tst_suite_begin(char *title);
-void tst_suite_finish();
-void tst_unit(char *message, void (*tst_func)());
+#include <stdbool.h>
 
 static int tests_count;
 static int failures_count;
@@ -23,12 +15,12 @@ void print_header(char *suite_title)
 {
     printf("%s\n", suite_title);
     print_divider();
+    printf("\n");
 }
 
 void print_footer()
 {
-    print_divider();
-    printf("Total tests ran: %d\n", tests_count);
+    printf("\nTotal tests ran: %d\n", tests_count);
     printf("Number of assertion failures: %d\n", failures_count);
 }
 
@@ -61,9 +53,25 @@ void tst_unit(char *title, void (*tst_func)())
         printf("PASSED \n");
     }
 
-    ++tests_count;
+    print_divider();
 
-    printf("\n");
+    ++tests_count;
+}
+
+void tst_true(bool b)
+{
+    if (b == false) {
+        printf("assertion failure: not true\n");
+        ++failures_count;
+    }
+}
+
+void tst_false(bool b)
+{
+    if (b == true) {
+        printf("assertion failure: not false\n");
+        ++failures_count;
+    }
 }
 
 void tst_str_equals(char *a, char *b)
@@ -82,29 +90,3 @@ void tst_int_equals(int a, int b)
     }
 }
 
-void some_test()
-{
-    tst_str_equals("some", "some");
-    tst_str_equals("not ", "the same");
-}
-
-void some_test_2()
-{
-    tst_int_equals(1, 1);
-    tst_int_equals(2, 3);
-}
-
-void some_test_3()
-{
-    tst_int_equals(2, 2);
-    tst_str_equals("ab", "ab");
-}
-
-int main()
-{
-    tst_suite_begin("Testing the test library"); 
-    tst_unit("Some test 1", some_test);
-    tst_unit("Some test 2", some_test_2);
-    tst_unit("Some test 3", some_test_3);
-    tst_suite_finish();
-}

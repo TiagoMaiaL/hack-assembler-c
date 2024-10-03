@@ -8,3 +8,6 @@
 
 # Object files
 **/*.out
+
+# Pre-compiled headers
+**/*.h.gch

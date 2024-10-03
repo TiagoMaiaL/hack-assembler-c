@@ -42,35 +42,6 @@ short streq(char *, char *);
 short strin(char *, char);
 void strrev(char *);
 
-// -----------------------------
-// main
-// -----------------------------
-
-int main()
-{
-    // For MVP:
-    // 1. Parse input text into tokens
-    // 2. Parse tokens into instructions or errors
-    // 3. Translate instructions into bin code
-    struct ainst inst;
-    inst.val = "123";
-
-    char bin[WORD_SIZE];
-    ainstbin(inst, bin);
-    printf("@123 in binary = %s\n", bin);
-
-    struct cinst inst2;
-    inst2.dest = "A";
-    inst2.comp = "M+1";
-
-    char cbin[WORD_SIZE];
-    cinstbin(cbin, inst2);
-
-    printf("A = -1 in binary = %s\n", cbin);
-
-    return 0;
-}
-
 // -----------------------------------
 // a-instruction translation functions
 // -----------------------------------
