@@ -1,12 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
 #include "utils.h"
-
-#define ON        '1'
-#define OFF       '0'
-#define WORD_SIZE 16
 
 // -----------------------
 // Instruction definitions
@@ -18,10 +13,6 @@ struct cinst {
     char * jmp;
 };
 
-struct ainst {
-    char * val;
-};
-
 // ---------------------------------
 // Conversion functions declarations 
 // ---------------------------------
@@ -31,54 +22,6 @@ void cinstbin(char *, struct cinst);
 void compbin(char * instcomp, char * bin);
 void destbin(char[], char[]);
 void jmpbin(char[], char[]);
-
-void itobin(int, char *, int);
-void ainstbin(struct ainst, char *);
-
-// -----------------------------------
-// a-instruction translation functions
-// -----------------------------------
-
-void ainstbin(struct ainst inst, char *bin)
-{
-    char *valstr = inst.val;
-    int val = atoi(valstr);
-    itobin(val, bin, WORD_SIZE);
-}
-
-void itobin(int val, char *bin, int bincount) {
-    int i, res, rem;
-
-    for (i = 0; i < bincount; ++i)
-        bin[i] = OFF;
-
-    bin[bincount] = '\0';
-
-    i = 0;
-    res = val;
-    rem = 0;
-
-    while (res > 0 && i < bincount) {
-        rem = res % 2;
-        res = res / 2;
-
-        if (rem == 0) {
-            bin[i] = OFF;
-        } else {
-            bin[i] = ON;
-        }
-
-        if (res == 1) {
-            ++i;
-            bin[i] = ON;
-            res = 0;
-        }
-
-        ++i;
-    }
-
-    strrev(bin);
-}
 
 // -----------------------------------
 // c-instruction translation functions

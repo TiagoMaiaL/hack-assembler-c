@@ -43,3 +43,37 @@ bool streq(char *l, char *r)
     return strcmp(l, r) == 0;
 }
 
+void itobin(int val, char *bin, int bincount) {
+    int i, res, rem;
+
+    for (i = 0; i < bincount; ++i)
+        bin[i] = OFF;
+
+    bin[bincount] = '\0';
+
+    i = 0;
+    res = val;
+    rem = 0;
+
+    while (res > 0 && i < bincount) {
+        rem = res % 2;
+        res = res / 2;
+
+        if (rem == 0) {
+            bin[i] = OFF;
+        } else {
+            bin[i] = ON;
+        }
+
+        if (res == 1) {
+            ++i;
+            bin[i] = ON;
+            res = 0;
+        }
+
+        ++i;
+    }
+
+    strrev(bin);
+}
+
