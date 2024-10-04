@@ -2,5 +2,5 @@ struct ainst {
     char *val;
 };
 
-void ainstbin(struct ainst, char *);
+void ainst_bin(struct ainst, char *);
 
