@@ -10,6 +10,7 @@ void test_utils()
     tst_unit("streq", test_streq);
     tst_unit("strin", test_streq);
     tst_unit("strrev", test_strrev);
+    tst_unit("itobin", test_itobin);
 
     tst_suite_finish();
 }
@@ -64,5 +65,49 @@ void test_strrev()
     strcpy(tested_str, "isi");
     strrev(tested_str);
     tst_str_equals(tested_str, "isi");
+}
+
+void test_itobin()
+{
+    char binstr[WORD_SIZE + 1];
+
+    itobin(0, binstr, WORD_SIZE);
+    tst_str_equals(binstr, "0000000000000000");
+
+    itobin(1, binstr, WORD_SIZE);
+    tst_str_equals(binstr, "0000000000000001");
+
+    itobin(2, binstr, WORD_SIZE);
+    tst_str_equals(binstr, "0000000000000010");
+
+    itobin(3, binstr, WORD_SIZE);
+    tst_str_equals(binstr, "0000000000000011");
+
+    itobin(4, binstr, WORD_SIZE);
+    tst_str_equals(binstr, "0000000000000100");
+
+    itobin(5, binstr, WORD_SIZE);
+    tst_str_equals(binstr, "0000000000000101");
+
+    itobin(6, binstr, WORD_SIZE);
+    tst_str_equals(binstr, "0000000000000110");
+
+    itobin(7, binstr, WORD_SIZE);
+    tst_str_equals(binstr, "0000000000000111");
+
+    itobin(8, binstr, WORD_SIZE);
+    tst_str_equals(binstr, "0000000000001000");
+
+    itobin(1234, binstr, WORD_SIZE);
+    tst_str_equals(binstr, "0000010011010010");
+
+    itobin(137, binstr, WORD_SIZE);
+    tst_str_equals(binstr, "0000000010001001");
+
+    itobin(278, binstr, WORD_SIZE);
+    tst_str_equals(binstr, "0000000100010110");
+
+    itobin(22341, binstr, WORD_SIZE);
+    tst_str_equals(binstr, "0101011101000101");
 }
 

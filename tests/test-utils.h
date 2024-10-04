@@ -6,3 +6,4 @@ void test_utils();
 void test_streq();
 void test_strin();
 void test_strrev();
+void test_itobin();
