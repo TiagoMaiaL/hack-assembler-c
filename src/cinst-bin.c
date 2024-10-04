@@ -8,21 +8,27 @@ void dest_bin(char *dest, char *bin);
 void jmp_bin(char *jmp, char *bin);
 
 // TODO: Define constants for cinst_bin.
+#define INST_HEADER "111"
+#define HEADER_LEN  3
+#define COMP_LEN    7
+#define DEST_LEN    3
+#define JMP_LEN     3
+
 void cinst_bin(struct cinst inst, char *bin)
 {
-    strcpy(bin, "111");
+    strcpy(bin, INST_HEADER);
 
-    char comp_binary[8];
+    char comp_binary[COMP_LEN + 1];
     comp_bin(inst.comp, comp_binary);
-    strcpy(bin + 3, comp_binary);
+    strcpy(bin + HEADER_LEN, comp_binary);
 
-    char dest_binary[4];
+    char dest_binary[DEST_LEN + 1];
     dest_bin(inst.dest, dest_binary);
-    strcpy(bin + 3 + 7, dest_binary);
+    strcpy(bin + HEADER_LEN + COMP_LEN, dest_binary);
 
-    char jmp_binary[4];
+    char jmp_binary[JMP_LEN + 1];
     jmp_bin(inst.jmp, jmp_binary);
-    strcpy(bin + 3 + 7 + 3, jmp_binary);
+    strcpy(bin + HEADER_LEN + COMP_LEN + DEST_LEN, jmp_binary);
 }
 
 void comp_bin(char *instcomp, char *bin)
@@ -91,7 +97,6 @@ void comp_bin(char *instcomp, char *bin)
     }
 }
 
-#define DEST_LEN     3
 #define A_DEST       0
 #define D_DEST       1
 #define M_DEST       2
@@ -119,8 +124,6 @@ void dest_bin(char *instdest, char *bin)
 
     bin[DEST_LEN] = '\0';
 }
-
-#define JMP_LEN 3
 
 void jmp_bin(char instjmp[], char bin[])
 {
