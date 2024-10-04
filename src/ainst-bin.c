@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "a-instruction-bin.h"
+#include "ainst-bin.h"
 #include "utils.h"
 
 void ainstbin(struct ainst inst, char *bin)
