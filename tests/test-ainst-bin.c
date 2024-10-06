@@ -1,4 +1,3 @@
-#include <string.h>
 #include "test-ainst-bin.h"
 #include "test.h"
 #include "../src/ainst-bin.h"

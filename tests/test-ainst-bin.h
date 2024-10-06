@@ -2,5 +2,5 @@
 // into their binary files.
 void test_ainst_translation();
 
-// Unit tests for each individual functions.
+// Unit tests
 void test_ainst_bin();
