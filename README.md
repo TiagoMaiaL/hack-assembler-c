@@ -1,13 +1,13 @@
 # Hack assembler
 
-Implementation in C of the hack assembler for the hack computing system described in nand2tetris.
+C Implementation of the Hack assembler for the Hack computing system described in nand2tetris.
 
 ## TODOS:
 - [x] Instruction translation module
-- [ ] Organize files into modules and helper functions
+- [x] Organize files into modules and helper functions
 - [ ] Use a build system
-- [ ] Unit-testing library
-- [ ] Unit-test instruction translation module
+- [x] Unit-testing library
+- [x] Unit-test instruction translation module
 - [ ] Tokenization module
 - [ ] Unit-test tokenization module
 - [ ] Parsing module creating instructions from tokens
