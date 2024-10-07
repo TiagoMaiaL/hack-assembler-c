@@ -11,3 +11,6 @@
 
 # Pre-compiled headers
 **/*.h.gch
+
+# Build executables
+build/_test

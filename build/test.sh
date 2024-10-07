@@ -1,3 +1,5 @@
+cd "`dirname $0`"
+
 source_files=(
     '../src/utils.c'
     '../src/ainst-bin.c'
@@ -18,4 +20,6 @@ for file in "${files[@]}"; do
     args+=$file' '
 done
 
-clang $args
+clang -o _test $args
+
+./_test
