@@ -5,7 +5,7 @@ C Implementation of the Hack assembler for the Hack computing system described i
 ## TODOS:
 - [x] Instruction translation module
 - [x] Organize files into modules and helper functions
-- [ ] Use a build system
+- [ ] Write build scripts
 - [x] Unit-testing library
 - [x] Unit-test instruction translation module
 - [ ] Tokenization module
