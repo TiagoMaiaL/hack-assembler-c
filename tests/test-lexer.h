@@ -2,6 +2,8 @@
 void test_lexer();
 
 // Unit tests
+void test_lex_line();
+void test_line_finished();
 void test_lexer_comment();
 void test_lexer_whitespace();
 void test_lexer_char_sequence();

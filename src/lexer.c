@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,21 +21,37 @@ bool is_semicolon(char c);
 bool is_newline(char c);
 char *copy_substr(int i, int j, char *src);
 
-struct token next_token(char *source_line)
+char *lexing_line;
+int cursor_index;
+
+void lex_line(char *source_line)
 {
-    // TODO: assert that line has \n char.
+    assert(strlen(source_line) != 0);
+    assert(strchr(source_line, '\n') != NULL);
+
+    lexing_line = source_line;
+    cursor_index = 0;
+}
+
+bool line_finished()
+{
+    return lexing_line[cursor_index] == '\n';
+}
+
+struct token next_token()
+{
     int i;
     int c;
     int token_start;
     int token_end;
 
-    i = 0;
+    i = cursor_index;
     state = none;
 
     struct token lexed_token;
 
-    while ((c = source_line[i]) != '\0') {
-        char next_c = source_line[i + 1];
+    while ((c = lexing_line[i]) != '\0') {
+        char next_c = lexing_line[i + 1];
 
         if (state == none) {
             if (is_whitespace(c)) {
@@ -66,6 +83,8 @@ struct token next_token(char *source_line)
             }
         }
 
+        // TODO: Fix lexing of whitespace and char_seq
+        // They don't need to be terminated by newline
         if (is_newline(c) && (state == in_comment || 
                               state == in_whitespace ||
                               state == in_char_sequence)) {
@@ -76,8 +95,10 @@ struct token next_token(char *source_line)
         ++i;
     }
 
+    cursor_index = i;
+
     char *lexeme;
-    lexeme = copy_substr(token_start, token_end, source_line);
+    lexeme = copy_substr(token_start, token_end, lexing_line);
 
     lexed_token.lexeme = lexeme;
 

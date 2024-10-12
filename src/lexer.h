@@ -13,6 +13,7 @@ struct token {
     char *lexeme;
 };
 
-// TODO: Check if pointer should be returned.
-// TODO: Store an internal source pointer to the char being lexed
-struct token next_token(char *source_line);
+void lex_line(char *source_line);
+bool line_finished();
+struct token next_token();
+
