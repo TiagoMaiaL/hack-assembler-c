@@ -37,6 +37,8 @@ struct token next_token(char *source_line)
 
         if (is_whitespace(c) && state == none) {
             state = in_whitespace;
+            lexed_token.type = whitespace;
+            token_start = i;
 
         } else if (is_slash(c) && 
                    is_slash(next_c) &&
@@ -55,6 +57,10 @@ struct token next_token(char *source_line)
 
         if (state == in_comment && is_newline(c)) {
             token_end = i - 1; 
+            break;
+
+        } else if (state == in_whitespace && is_newline(c)) {
+            token_end = i - 1;
             break;
         }
         
