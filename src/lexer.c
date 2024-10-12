@@ -7,14 +7,14 @@ enum lex_state {
     none,
     in_whitespace,
     in_comment,
-    in_inst_component
+    in_char_sequence
 };
 
 enum lex_state state;
 
 bool is_whitespace(char c);
 bool is_slash(char c);
-bool is_general_inst(char c);
+bool is_general_char(char c);
 bool is_equals(char c);
 bool is_semicolon(char c);
 bool is_newline(char c);
@@ -59,14 +59,23 @@ struct token next_token(char *source_line)
             token_end = i;
             lexed_token.type = semicolon;
             break;
+
+        } else if (is_general_char(c) && state == none) {
+            state = in_char_sequence;
+            token_start = i;
+            lexed_token.type = char_sequence;
         }
-        // TODO: lex char sequence
 
         if (state == in_comment && is_newline(c)) {
             token_end = i - 1; 
             break;
 
         } else if (state == in_whitespace && is_newline(c)) {
+            token_end = i - 1;
+            break;
+
+        } else if (state == in_char_sequence && 
+                   is_newline(c)) {
             token_end = i - 1;
             break;
         }
@@ -92,7 +101,7 @@ bool is_slash(char c)
     return c == '/';
 }
 
-bool is_general_inst(char c)
+bool is_general_char(char c)
 {
     return  !is_whitespace(c) && 
             !is_slash(c) &&

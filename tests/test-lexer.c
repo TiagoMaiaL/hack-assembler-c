@@ -76,7 +76,30 @@ void test_lexer_whitespace()
 
 void test_lexer_char_sequence()
 {
-    tst_true(0);
+    struct token char_seq_a = next_token("asdf\n");
+    tst_true(char_seq_a.type == char_sequence);
+    tst_str_equals(char_seq_a.lexeme, "asdf");
+    free(char_seq_a.lexeme);
+
+    struct token char_seq_b = next_token("a\n");
+    tst_true(char_seq_b.type == char_sequence);
+    tst_str_equals(char_seq_b.lexeme, "a");
+    free(char_seq_a.lexeme);
+
+    struct token char_seq_c = next_token("M+1\n");
+    tst_true(char_seq_c.type == char_sequence);
+    tst_str_equals(char_seq_c.lexeme, "M+1");
+    free(char_seq_c.lexeme);
+
+    struct token char_seq_d = next_token("1234\n");
+    tst_true(char_seq_d.type == char_sequence);
+    tst_str_equals(char_seq_d.lexeme, "1234");
+    free(char_seq_d.lexeme);
+
+    struct token char_seq_e = next_token("0\n");
+    tst_true(char_seq_e.type == char_sequence);
+    tst_str_equals(char_seq_e.lexeme, "0");
+    free(char_seq_e.lexeme);
 }
 
 void test_lexer_equals_sign()
