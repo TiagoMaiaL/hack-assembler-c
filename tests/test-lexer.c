@@ -34,6 +34,10 @@ void test_lexer_comment()
     struct token comment_c = next_token("// \n");
     tst_true(comment_c.type == comment);
     tst_str_equals(comment_c.lexeme, "// ");
+
+    struct token comment_d = next_token("///////\n");
+    tst_true(comment_d.type == comment);
+    tst_str_equals(comment_d.lexeme, "///////");
 }
 
 void test_lexer_whitespace()

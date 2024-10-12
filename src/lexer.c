@@ -39,7 +39,8 @@ struct token next_token(char *source_line)
             state = in_whitespace;
 
         } else if (is_slash(c) && 
-                   is_slash(next_c)) {
+                   is_slash(next_c) &&
+                   state == none) {
             state = in_comment;
             lexed_token.type = comment;
             token_start = i;
@@ -103,19 +104,20 @@ bool is_newline(char c)
 
 char *copy_substr(int i, int j, char *src)
 {
+    int sub_i;
     int len;
     char *sub_str;
 
+    sub_i = 0;
     // len is indexes + 1 (they start at 0), + '\0'
     len = (j - i) + 2;
-
     sub_str = malloc(len * sizeof(char));
 
     while (i <= j) {
-        sub_str[i] = src[i];
+        sub_str[sub_i] = src[i];
         ++i;
+        ++sub_i;
     }
 
     return sub_str;
 }
-
