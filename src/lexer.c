@@ -36,46 +36,39 @@ struct token next_token(char *source_line)
     while ((c = source_line[i]) != '\0') {
         char next_c = source_line[i + 1];
 
-        if (is_whitespace(c) && state == none) {
-            state = in_whitespace;
-            lexed_token.type = whitespace;
-            token_start = i;
+        if (state == none) {
+            if (is_whitespace(c)) {
+                state = in_whitespace;
+                lexed_token.type = whitespace;
+                token_start = i;
 
-        } else if (is_slash(c) && 
-                   is_slash(next_c) &&
-                   state == none) {
-            state = in_comment;
-            lexed_token.type = comment;
-            token_start = i;
+            } else if (is_slash(c) && is_slash(next_c)) {
+                state = in_comment;
+                lexed_token.type = comment;
+                token_start = i;
 
-        } else if (is_equals(c)) {
-            token_start = i;
-            token_end = i;
-            lexed_token.type = equals;
-            break;
+            } else if (is_equals(c)) {
+                token_start = i;
+                token_end = i;
+                lexed_token.type = equals;
+                break;
 
-        } else if (is_semicolon(c)) {
-            token_start = i;
-            token_end = i;
-            lexed_token.type = semicolon;
-            break;
+            } else if (is_semicolon(c)) {
+                token_start = i;
+                token_end = i;
+                lexed_token.type = semicolon;
+                break;
 
-        } else if (is_general_char(c) && state == none) {
-            state = in_char_sequence;
-            token_start = i;
-            lexed_token.type = char_sequence;
+            } else if (is_general_char(c)) {
+                state = in_char_sequence;
+                token_start = i;
+                lexed_token.type = char_sequence;
+            }
         }
 
-        if (state == in_comment && is_newline(c)) {
-            token_end = i - 1; 
-            break;
-
-        } else if (state == in_whitespace && is_newline(c)) {
-            token_end = i - 1;
-            break;
-
-        } else if (state == in_char_sequence && 
-                   is_newline(c)) {
+        if (is_newline(c) && (state == in_comment || 
+                              state == in_whitespace ||
+                              state == in_char_sequence)) {
             token_end = i - 1;
             break;
         }
