@@ -81,11 +81,17 @@ void test_lexer_char_sequence()
 
 void test_lexer_equals_sign()
 {
-    tst_true(0);
+    struct token equals_sign = next_token("=\n");
+    tst_true(equals_sign.type == equals);
+    tst_str_equals(equals_sign.lexeme, "=");
+    free(equals_sign.lexeme);
 }
 
 void test_lexer_semicolon_sign()
 {
-    tst_true(0);
+    struct token semicolon_sign = next_token(";\n");
+    tst_true(semicolon_sign.type == semicolon);
+    tst_str_equals(semicolon_sign.lexeme, ";");
+    free(semicolon_sign.lexeme);
 }
 

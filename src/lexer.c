@@ -22,6 +22,7 @@ char *copy_substr(int i, int j, char *src);
 
 struct token next_token(char *source_line)
 {
+    // TODO: assert that line has \n char.
     int i;
     int c;
     int token_start;
@@ -48,10 +49,16 @@ struct token next_token(char *source_line)
             token_start = i;
 
         } else if (is_equals(c)) {
-            state = none;
+            token_start = i;
+            token_end = i;
+            lexed_token.type = equals;
+            break;
 
         } else if (is_semicolon(c)) {
-            state = none;
+            token_start = i;
+            token_end = i;
+            lexed_token.type = semicolon;
+            break;
         }
         // TODO: lex char sequence
 
