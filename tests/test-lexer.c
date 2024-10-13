@@ -15,6 +15,7 @@ void test_lexer()
     tst_unit("Char sequence", test_lexer_char_sequence);
     tst_unit("Equals sign", test_lexer_equals_sign);
     tst_unit("Semicolon", test_lexer_semicolon_sign);
+    tst_unit("At sign", test_lexer_at_sign);
     tst_unit("Multiple tokens", test_lexer_multiple_tokens);
 
     tst_suite_finish();
@@ -175,7 +176,66 @@ void test_lexer_semicolon_sign()
     free(semicolon_sign.lexeme);
 }
 
+void test_lexer_at_sign()
+{
+    lex_line("@\n");
+    struct token at_sign = next_token();
+    tst_true(at_sign.type == at);
+    tst_str_equals(at_sign.lexeme, "@");
+    free(at_sign.lexeme);
+}
+
 void test_lexer_multiple_tokens()
 {
-    tst_true(0);
+    lex_line("asdf \t =;A+1//some comment\n");
+    
+    struct token char_seq_a = next_token();
+    tst_true(char_seq_a.type == char_sequence);
+    tst_str_equals(char_seq_a.lexeme, "asdf");
+    free(char_seq_a.lexeme);
+
+    struct token whitespaces = next_token();
+    tst_true(whitespaces.type == whitespace);
+    tst_str_equals(whitespaces.lexeme, " \t ");
+    free(whitespaces.lexeme);
+
+    struct token equals_sign = next_token();
+    tst_true(equals_sign.type == equals);
+    tst_str_equals(equals_sign.lexeme, "=");
+    free(equals_sign.lexeme);
+
+    struct token semicolon_sign = next_token();
+    tst_true(semicolon_sign.type == semicolon);
+    tst_str_equals(semicolon_sign.lexeme, ";");
+    free(semicolon_sign.lexeme);
+
+    struct token char_seq_b = next_token();
+    tst_true(char_seq_b.type == char_sequence);
+    tst_str_equals(char_seq_b.lexeme, "A+1");
+    free(char_seq_b.lexeme);
+
+    struct token comment_token = next_token();
+    tst_true(comment_token.type == comment);
+    tst_str_equals(comment_token.lexeme, "//some comment");
+    free(comment_token.lexeme);
+
+    tst_true(line_finished());
+
+    lex_line("@12341234@\n");
+
+    struct token at_sign = next_token();
+    tst_true(at_sign.type == at);
+    tst_str_equals(at_sign.lexeme, "@");
+    free(at_sign.lexeme);
+
+    struct token char_seq = next_token();
+    tst_true(char_seq.type == char_sequence);
+    tst_str_equals(char_seq.lexeme, "12341234");
+    free(char_seq.lexeme);
+
+    struct token at_sign_b = next_token();
+    tst_true(at_sign_b.type == at);
+    tst_str_equals(at_sign.lexeme, "@");
+    free(at_sign.lexeme);
 }
+

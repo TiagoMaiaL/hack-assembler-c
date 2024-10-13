@@ -18,6 +18,7 @@ bool is_slash(char c);
 bool is_general_char(char c);
 bool is_equals(char c);
 bool is_semicolon(char c);
+bool is_at_sign(char c);
 bool is_newline(char c);
 char *copy_substr(int i, int j, char *src);
 
@@ -68,12 +69,21 @@ struct token next_token()
                 token_start = i;
                 token_end = i;
                 lexed_token.type = equals;
+                ++i;
                 break;
 
             } else if (is_semicolon(c)) {
                 token_start = i;
                 token_end = i;
                 lexed_token.type = semicolon;
+                ++i;
+                break;
+
+            } else if (is_at_sign(c)) {
+                token_start = i;
+                token_end = i;
+                lexed_token.type = at;
+                ++i;
                 break;
 
             } else if (is_general_char(c)) {
@@ -133,7 +143,8 @@ bool is_general_char(char c)
             !is_slash(c) &&
             !is_equals(c) &&
             !is_semicolon(c) &&
-            c != '\n' &&
+            !is_newline(c) &&
+            !is_at_sign(c) &&
             c != '\0';
 }
 
@@ -145,6 +156,11 @@ bool is_equals(char c)
 bool is_semicolon(char c)
 {
     return c == ';';
+}
+
+bool is_at_sign(char c)
+{
+    return c == '@';
 }
 
 bool is_newline(char c)

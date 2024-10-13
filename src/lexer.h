@@ -4,8 +4,8 @@ enum token_type {
     char_sequence, // M+1, -1, 0, D, aaa, 1223, ...
     equals, // dest=computation
     semicolon, // computation;jmp
+    at, // @_______...
     // TODO: Add a token for symbol
-    other // Unrecognizeable type of token
 };
 
 struct token {
