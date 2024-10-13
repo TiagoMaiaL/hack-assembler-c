@@ -83,11 +83,23 @@ struct token next_token()
             }
         }
 
-        // TODO: Fix lexing of whitespace and char_seq
-        // They don't need to be terminated by newline
-        if (is_newline(c) && (state == in_comment || 
-                              state == in_whitespace ||
-                              state == in_char_sequence)) {
+        bool is_comment_end;
+        bool is_whitespace_end;
+        bool is_char_sequence_end;
+
+        is_comment_end = is_newline(c) && 
+                         state == in_comment;
+
+        is_whitespace_end = !is_whitespace(c) &&
+                            state == in_whitespace;
+
+        is_char_sequence_end = !is_general_char(c) &&
+                               state == in_char_sequence;
+
+        if (is_comment_end || 
+            is_whitespace_end || 
+            is_char_sequence_end
+        ) {
             token_end = i - 1;
             break;
         }
@@ -120,7 +132,9 @@ bool is_general_char(char c)
     return  !is_whitespace(c) && 
             !is_slash(c) &&
             !is_equals(c) &&
-            !is_semicolon(c);
+            !is_semicolon(c) &&
+            c != '\n' &&
+            c != '\0';
 }
 
 bool is_equals(char c)
@@ -157,3 +171,4 @@ char *copy_substr(int i, int j, char *src)
 
     return sub_str;
 }
+

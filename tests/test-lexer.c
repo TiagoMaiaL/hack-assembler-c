@@ -15,6 +15,7 @@ void test_lexer()
     tst_unit("Char sequence", test_lexer_char_sequence);
     tst_unit("Equals sign", test_lexer_equals_sign);
     tst_unit("Semicolon", test_lexer_semicolon_sign);
+    tst_unit("Multiple tokens", test_lexer_multiple_tokens);
 
     tst_suite_finish();
 }
@@ -27,6 +28,8 @@ void test_lex_line()
     char_seq = next_token();
 
     tst_true(char_seq.type == char_sequence);
+
+    free(char_seq.lexeme);
 }
 
 void test_line_finished()
@@ -39,6 +42,8 @@ void test_line_finished()
     some_token = next_token();
 
     tst_true(line_finished());
+
+    free(some_token.lexeme);
 }
 
 void test_lexer_comment()
@@ -105,6 +110,12 @@ void test_lexer_whitespace()
     tst_true(whitespace_d.type == whitespace);
     tst_str_equals(whitespace_d.lexeme, "\t\t  \t");
     free(whitespace_d.lexeme);
+
+    lex_line("    some_identifier\n");
+    struct token whitespace_e = next_token();
+    tst_true(whitespace_e.type == whitespace);
+    tst_str_equals(whitespace_e.lexeme, "    ");
+    free(whitespace_e.lexeme);
 }
 
 void test_lexer_char_sequence()
@@ -138,6 +149,12 @@ void test_lexer_char_sequence()
     tst_true(char_seq_e.type == char_sequence);
     tst_str_equals(char_seq_e.lexeme, "0");
     free(char_seq_e.lexeme);
+
+    lex_line("some_identifier x   asdf\n");
+    struct token char_seq_f = next_token();
+    tst_true(char_seq_f.type == char_sequence);
+    tst_str_equals(char_seq_f.lexeme, "some_identifier");
+    free(char_seq_f.lexeme);
 }
 
 void test_lexer_equals_sign()
@@ -158,3 +175,7 @@ void test_lexer_semicolon_sign()
     free(semicolon_sign.lexeme);
 }
 
+void test_lexer_multiple_tokens()
+{
+    tst_true(0);
+}
