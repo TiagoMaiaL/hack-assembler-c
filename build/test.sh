@@ -5,6 +5,7 @@ source_files=(
     '../src/ainst-bin.c'
     '../src/cinst-bin.c'
     '../src/lexer.c'
+    '../src/parser.c'
 )
 test_files=(
     '../tests/test-entry.c'
@@ -13,13 +14,13 @@ test_files=(
     '../tests/test-ainst-bin.c'
     '../tests/test-cinst-bin.c'
     '../tests/test-lexer.c'
+    '../tests/test-parser.c'
 )
 files=("${source_files[@]}" "${test_files[@]}")
 
 args=""
 
 if [ -f ./_test ]; then
-    echo "removing test file"
     rm _test
 fi
 

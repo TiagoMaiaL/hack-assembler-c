@@ -1,8 +1,3 @@
-struct cinst {
-    char *dest;
-    char *comp;
-    char *jmp;
-};
+#include "inst.h"
 
 void cinst_bin(struct cinst inst, char *);
-

@@ -1,6 +1,3 @@
-struct ainst {
-    char *val;
-};
+#include "inst.h"
 
 void ainst_bin(struct ainst inst, char *bin);
-

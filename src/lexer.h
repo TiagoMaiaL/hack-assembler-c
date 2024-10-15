@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 enum token_type {
     whitespace,
     comment,
