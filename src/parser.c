@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include "lexer.h"
@@ -6,10 +7,10 @@
 
 struct inst parse_ainst();
 struct inst parse_cinst();
-bool ainst_val_valid();
-bool cinst_dest_valid();
-bool cinst_comp_valid();
-bool cinst_jmp_valid();
+bool ainst_val_valid(struct token);
+bool cinst_dest_valid(struct token);
+bool cinst_comp_valid(struct token);
+bool cinst_jmp_valid(struct token);
 
 struct inst parse(char *source_line)
 {
@@ -17,7 +18,7 @@ struct inst parse(char *source_line)
 
     lex_line(source_line);
 
-    while (line_finished()) {
+    while (!line_finished()) {
         struct token curr_token;
 
         curr_token = next_token();
@@ -30,9 +31,11 @@ struct inst parse(char *source_line)
         }
 
         if (curr_token.type == at) {
-            parse_ainst();
+            // TODO: return a token if there are no errors.
+            return parse_ainst();
 
         } else if (curr_token.type == char_sequence) {
+            // TODO: return a token if there are no errors.
             parse_cinst();
 
         } else {
@@ -44,8 +47,23 @@ struct inst parse(char *source_line)
 
 struct inst parse_ainst()
 {
-    // TODO: Make sure lexeme only has number digits.
-    // TODO: Allow for symbols in the future.
+    struct token expected_char_seq = next_token();
+
+    if (expected_char_seq.type == char_sequence && 
+        ainst_val_valid(expected_char_seq)
+    ) {
+        struct ainst _ainst;
+        _ainst.val = expected_char_seq.lexeme;
+
+        struct inst _inst;
+        _inst.type = a_inst_type;
+        _inst.a_inst = _ainst;
+
+        return _inst;
+
+    } else {
+        // TODO: handle errors.
+    }
 }
 
 struct inst parse_cinst()
@@ -58,25 +76,40 @@ struct inst parse_cinst()
       // TODO: It's either a jmp or a comp, depending on prev
 }
 
-bool ainst_val_valid()
+bool ainst_val_valid(struct token char_seq)
+{
+    int c;
+    int i;
+
+    i = 0;
+
+    if (strlen(char_seq.lexeme) == 0) {
+        return false;
+    }
+
+    while ((c = char_seq.lexeme[i]) != '\0') {
+        if (!isdigit(c)) {
+            return false;
+        }
+        ++i;
+    }
+
+    return true;
+}
+
+bool cinst_dest_valid(struct token)
 {
     // TODO:
     return false;
 }
 
-bool cinst_dest_valid()
+bool cinst_comp_valid(struct token)
 {
     // TODO:
     return false;
 }
 
-bool cinst_comp_valid()
-{
-    // TODO:
-    return false;
-}
-
-bool cinst_jmp_valid()
+bool cinst_jmp_valid(struct token)
 {
     // TODO:
     return false;

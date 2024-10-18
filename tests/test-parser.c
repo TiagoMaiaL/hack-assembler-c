@@ -31,7 +31,12 @@ void test_parser()
 
 void test_parsing_ainst()
 {
-    tst_true(0);
+    struct inst expected_inst;
+    
+    expected_inst = parse("@1234\n");
+
+    tst_true(expected_inst.type == a_inst_type);
+    tst_str_equals(expected_inst.a_inst.val, "1234");
 }
 
 void test_parsing_invalid_ainst()

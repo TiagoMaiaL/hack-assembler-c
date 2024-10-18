@@ -9,8 +9,8 @@ struct cinst {
 };
 
 enum inst_type {
-    a, 
-    c
+    a_inst_type, 
+    c_inst_type
 };
 
 struct inst {
