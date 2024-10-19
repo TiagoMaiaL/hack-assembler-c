@@ -6,7 +6,7 @@
 #include "parser.h"
 
 struct inst parse_ainst();
-struct inst parse_cinst();
+struct inst parse_cinst(struct token);
 bool ainst_val_valid(struct token);
 bool cinst_dest_valid(struct token);
 bool cinst_comp_valid(struct token);
@@ -32,11 +32,12 @@ struct inst parse(char *source_line)
 
         if (curr_token.type == at) {
             // TODO: return a token if there are no errors.
+            free(curr_token.lexeme);
             return parse_ainst();
 
         } else if (curr_token.type == char_sequence) {
             // TODO: return a token if there are no errors.
-            parse_cinst();
+            return parse_cinst(curr_token);
 
         } else {
             // TODO: Return error, for now we can abort
@@ -66,14 +67,57 @@ struct inst parse_ainst()
     }
 }
 
-struct inst parse_cinst()
+#include <stdio.h>
+struct inst parse_cinst(struct token initial_char_seq)
 {
-    // TODO: Expect char_seq
-    // TODO: Lookahead for either equals or semicolon
-      // TODO: if equals, char_seq is dest, validate it
-      // TODO: if semicolon, char_seq is compt, validate it
-    // TODO: expect next token to be char_seq
-      // TODO: It's either a jmp or a comp, depending on prev
+    struct token expected_separator = next_token(); // = or ;
+
+    if (expected_separator.type == equals) {
+        free(expected_separator.lexeme);
+
+        struct token dest = initial_char_seq;
+        struct token expected_comp = next_token();
+
+        if (expected_comp.type == char_sequence) {
+            struct cinst _cinst;
+            _cinst.dest = dest.lexeme;
+            _cinst.comp = expected_comp.lexeme;
+            _cinst.jmp = NULL;
+
+            struct inst _inst;
+            _inst.type = c_inst_type;
+            _inst.c_inst = _cinst;
+
+            return _inst;
+        } else {
+            // TODO: Report errors.
+        }
+
+    } else if (expected_separator.type == semicolon) {
+        free(expected_separator.lexeme);
+    
+        struct token comp = initial_char_seq;
+        struct token expected_jmp = next_token();
+
+        if (expected_jmp.type == char_sequence) {
+            struct cinst _cinst;
+            _cinst.comp = comp.lexeme;
+            _cinst.jmp = expected_jmp.lexeme;
+            _cinst.dest = NULL;
+
+            struct inst _inst;
+            _inst.type = c_inst_type;
+            _inst.c_inst = _cinst;
+
+            return _inst;
+   
+        } else {
+            // TODO: Report errors.
+        }
+
+    } else {
+        // TODO: Report errors.
+    }
 }
 
 bool ainst_val_valid(struct token char_seq)

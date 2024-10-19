@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "test.h"
 #include "test-parser.h"
 #include "../src/parser.h"
@@ -46,7 +47,21 @@ void test_parsing_invalid_ainst()
 
 void test_parsing_cinst()
 {
-    tst_true(0);
+    struct inst expected_inst;
+    
+    expected_inst = parse("D=M+1\n");
+    tst_true(expected_inst.type == c_inst_type);
+    tst_str_equals(expected_inst.c_inst.dest, "D");
+    tst_str_equals(expected_inst.c_inst.comp, "M+1");
+    free(expected_inst.c_inst.dest);
+    free(expected_inst.c_inst.comp);
+
+    expected_inst = parse("D-1;JMP\n");
+    tst_true(expected_inst.type == c_inst_type);
+    tst_str_equals(expected_inst.c_inst.comp, "D-1");
+    tst_str_equals(expected_inst.c_inst.jmp, "JMP");
+    free(expected_inst.c_inst.comp);
+    free(expected_inst.c_inst.jmp);
 }
 
 void test_parsing_invalid_cinst_dest()
