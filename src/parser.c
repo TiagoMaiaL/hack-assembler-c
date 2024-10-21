@@ -12,7 +12,7 @@ bool cinst_dest_valid(struct token);
 bool cinst_comp_valid(struct token);
 bool cinst_jmp_valid(struct token);
 
-struct inst parse(char *source_line)
+struct parser_result parse(char *source_line)
 {
     assert(strlen(source_line) > 0);
 
@@ -26,6 +26,7 @@ struct inst parse(char *source_line)
         if (curr_token.type == comment || 
             curr_token.type == whitespace
         ) {
+            // Drop on the floor.
             free(curr_token.lexeme);
             continue;
         }
@@ -33,17 +34,34 @@ struct inst parse(char *source_line)
         if (curr_token.type == at) {
             // TODO: return a token if there are no errors.
             free(curr_token.lexeme);
-            return parse_ainst();
+
+            struct inst a_inst = parse_ainst();
+
+            // TODO: Create result factory.
+            struct parser_result result;
+            result.code = 0;
+            result.parsed_inst = a_inst;
+
+            return result;
 
         } else if (curr_token.type == char_sequence) {
             // TODO: return a token if there are no errors.
-            return parse_cinst(curr_token);
+            struct inst c_inst = parse_cinst(curr_token);
+
+            struct parser_result result;
+            result.code = 0;
+            result.parsed_inst = c_inst;
+
+            return result;
 
         } else {
             // TODO: Return error, for now we can abort
             abort();
         }
     }
+
+    // TODO: Test the return of an empty inst
+    //  supporting whitespaces and comments.
 }
 
 struct inst parse_ainst()
@@ -67,7 +85,6 @@ struct inst parse_ainst()
     }
 }
 
-#include <stdio.h>
 struct inst parse_cinst(struct token initial_char_seq)
 {
     struct token expected_separator = next_token(); // = or ;

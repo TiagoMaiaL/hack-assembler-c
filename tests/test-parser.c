@@ -32,12 +32,14 @@ void test_parser()
 
 void test_parsing_ainst()
 {
-    struct inst expected_inst;
+    struct parser_result result;
     
-    expected_inst = parse("@1234\n");
+    result = parse("@1234\n");
 
-    tst_true(expected_inst.type == a_inst_type);
-    tst_str_equals(expected_inst.a_inst.val, "1234");
+    tst_true(result.code == 0);
+    tst_true(result.parsed_inst.type == a_inst_type);
+    tst_str_equals(result.parsed_inst.a_inst.val, "1234");
+    free(result.parsed_inst.a_inst.val);
 }
 
 void test_parsing_invalid_ainst()
@@ -47,21 +49,24 @@ void test_parsing_invalid_ainst()
 
 void test_parsing_cinst()
 {
-    struct inst expected_inst;
+    struct parser_result result;
     
-    expected_inst = parse("D=M+1\n");
-    tst_true(expected_inst.type == c_inst_type);
-    tst_str_equals(expected_inst.c_inst.dest, "D");
-    tst_str_equals(expected_inst.c_inst.comp, "M+1");
-    free(expected_inst.c_inst.dest);
-    free(expected_inst.c_inst.comp);
+    result = parse("D=M+1\n");
+    
+    tst_true(result.code == 0);
+    tst_true(result.parsed_inst.type == c_inst_type);
+    tst_str_equals(result.parsed_inst.c_inst.dest, "D");
+    tst_str_equals(result.parsed_inst.c_inst.comp, "M+1");
+    free(result.parsed_inst.c_inst.dest);
+    free(result.parsed_inst.c_inst.comp);
 
-    expected_inst = parse("D-1;JMP\n");
-    tst_true(expected_inst.type == c_inst_type);
-    tst_str_equals(expected_inst.c_inst.comp, "D-1");
-    tst_str_equals(expected_inst.c_inst.jmp, "JMP");
-    free(expected_inst.c_inst.comp);
-    free(expected_inst.c_inst.jmp);
+    result = parse("D-1;JMP\n");
+
+    tst_true(result.parsed_inst.type == c_inst_type);
+    tst_str_equals(result.parsed_inst.c_inst.comp, "D-1");
+    tst_str_equals(result.parsed_inst.c_inst.jmp, "JMP");
+    free(result.parsed_inst.c_inst.comp);
+    free(result.parsed_inst.c_inst.jmp);
 }
 
 void test_parsing_invalid_cinst_dest()
