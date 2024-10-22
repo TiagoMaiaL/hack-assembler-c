@@ -32,12 +32,10 @@ struct parser_result parse(char *source_line)
         }
 
         if (curr_token.type == at) {
-            // TODO: return a token if there are no errors.
             free(curr_token.lexeme);
             return parse_ainst();
 
         } else if (curr_token.type == char_sequence) {
-            // TODO: return a token if there are no errors.
             return parse_cinst(curr_token);
 
         } else {
@@ -90,7 +88,9 @@ struct parser_result parse_cinst(struct token initial_char_seq)
 
     struct token expected_separator = next_token(); // = or ;
 
-    if (expected_separator.type == equals) {
+    if (expected_separator.type == equals &&
+        cinst_dest_valid(initial_char_seq)
+    ) {
         free(expected_separator.lexeme);
 
         struct token dest = initial_char_seq;
@@ -120,7 +120,9 @@ struct parser_result parse_cinst(struct token initial_char_seq)
         struct token comp = initial_char_seq;
         struct token expected_jmp = next_token();
 
-        if (expected_jmp.type == char_sequence) {
+        if (expected_jmp.type == char_sequence &&
+            cinst_jmp_valid(expected_jmp)
+        ) {
             struct cinst _cinst;
             _cinst.comp = comp.lexeme;
             _cinst.jmp = expected_jmp.lexeme;
@@ -167,10 +169,28 @@ bool ainst_val_valid(struct token char_seq)
     return true;
 }
 
-bool cinst_dest_valid(struct token)
+#define DESTS_COUNT 7
+const char *valid_dests[] = {
+    "A",
+    "D",
+    "M",
+    "AM",
+    "AD",
+    "MD",
+    "ADM"
+};
+
+bool cinst_dest_valid(struct token _token)
 {
-    // TODO:
-    return false;
+    bool is_valid = false;
+
+    for (int i = 0; i < DESTS_COUNT; ++i) {
+        if (strcmp(valid_dests[i], _token.lexeme) == 0) {
+            return true;
+        }
+    }
+
+    return is_valid;
 }
 
 bool cinst_comp_valid(struct token)
@@ -179,8 +199,26 @@ bool cinst_comp_valid(struct token)
     return false;
 }
 
-bool cinst_jmp_valid(struct token)
+#define JMPS_COUNT 7
+const char *valid_jmps[] = {
+    "JGT",
+    "JEQ",
+    "JGE",
+    "JLT",
+    "JNE",
+    "JLE",
+    "JMP"
+};
+
+bool cinst_jmp_valid(struct token _token)
 {
-    // TODO:
-    return false;
+    bool is_valid = false;
+
+    for (int i = 0; i < JMPS_COUNT; ++i) {
+        if (strcmp(valid_jmps[i], _token.lexeme) == 0) {
+            return true;
+        }
+    }
+
+    return is_valid;
 }

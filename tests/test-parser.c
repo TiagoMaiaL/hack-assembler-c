@@ -75,7 +75,10 @@ void test_parsing_cinst()
 
 void test_parsing_invalid_cinst_dest()
 {
-    tst_true(0);
+    struct parser_result result;
+
+    result = parse("invalid_dest=M+1\n");
+    tst_true(result.code == -1);
 }
 
 void test_parsing_invalid_cinst_comp()
@@ -85,7 +88,10 @@ void test_parsing_invalid_cinst_comp()
 
 void test_parsing_invalid_cinst_jmp()
 {
-    tst_true(0);
+    struct parser_result result;
+
+    result = parse("D;some_identifier\n");
+    tst_true(result.code == -1);
 }
 
 void test_parsing_malformed_cinst()
