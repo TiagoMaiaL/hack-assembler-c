@@ -44,7 +44,11 @@ void test_parsing_ainst()
 
 void test_parsing_invalid_ainst()
 {
-    tst_true(0);
+    tst_true(1);
+
+    struct parser_result result;
+    result = parse("@______\n");
+    tst_true(result.code == -1);
 }
 
 void test_parsing_cinst()
@@ -86,6 +90,12 @@ void test_parsing_invalid_cinst_jmp()
 
 void test_parsing_malformed_cinst()
 {
-    tst_true(0);
+    struct parser_result result;
+
+    result = parse("=M+1\n");
+    tst_true(result.code == -1);
+
+    result = parse(";asdf\n");
+    tst_true(result.code == -1);
 }
 

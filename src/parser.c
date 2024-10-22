@@ -5,8 +5,8 @@
 #include "lexer.h"
 #include "parser.h"
 
-struct inst parse_ainst();
-struct inst parse_cinst(struct token);
+struct parser_result parse_ainst();
+struct parser_result parse_cinst(struct token);
 bool ainst_val_valid(struct token);
 bool cinst_dest_valid(struct token);
 bool cinst_comp_valid(struct token);
@@ -34,38 +34,33 @@ struct parser_result parse(char *source_line)
         if (curr_token.type == at) {
             // TODO: return a token if there are no errors.
             free(curr_token.lexeme);
-
-            struct inst a_inst = parse_ainst();
-
-            // TODO: Create result factory.
-            struct parser_result result;
-            result.code = 0;
-            result.parsed_inst = a_inst;
-
-            return result;
+            return parse_ainst();
 
         } else if (curr_token.type == char_sequence) {
             // TODO: return a token if there are no errors.
-            struct inst c_inst = parse_cinst(curr_token);
-
-            struct parser_result result;
-            result.code = 0;
-            result.parsed_inst = c_inst;
-
-            return result;
+            return parse_cinst(curr_token);
 
         } else {
-            // TODO: Return error, for now we can abort
-            abort();
+            // TODO: Print error message.
+            free(curr_token.lexeme);
+
+            struct parser_result result;
+            result.code = -1;
+            return result;
         }
     }
 
-    // TODO: Test the return of an empty inst
-    //  supporting whitespaces and comments.
+    // TODO: Return empty positive parser_result
+    // TODO: Test return of empty parser_result
+    // TODO: Add factory for empty parser_result
 }
 
-struct inst parse_ainst()
+struct parser_result parse_ainst()
 {
+
+    // TODO: Create result factory.
+    struct parser_result result;
+
     struct token expected_char_seq = next_token();
 
     if (expected_char_seq.type == char_sequence && 
@@ -78,15 +73,21 @@ struct inst parse_ainst()
         _inst.type = a_inst_type;
         _inst.a_inst = _ainst;
 
-        return _inst;
+        result.code = 0;
+        result.parsed_inst = _inst;
 
     } else {
+        // TODO: Print error.
         // TODO: handle errors.
     }
+
+    return result;
 }
 
-struct inst parse_cinst(struct token initial_char_seq)
+struct parser_result parse_cinst(struct token initial_char_seq)
 {
+    struct parser_result result;
+
     struct token expected_separator = next_token(); // = or ;
 
     if (expected_separator.type == equals) {
@@ -105,7 +106,9 @@ struct inst parse_cinst(struct token initial_char_seq)
             _inst.type = c_inst_type;
             _inst.c_inst = _cinst;
 
-            return _inst;
+            result.code = 0;
+            result.parsed_inst = _inst;
+
         } else {
             // TODO: Report errors.
         }
@@ -126,7 +129,8 @@ struct inst parse_cinst(struct token initial_char_seq)
             _inst.type = c_inst_type;
             _inst.c_inst = _cinst;
 
-            return _inst;
+            result.code = 0;
+            result.parsed_inst = _inst;
    
         } else {
             // TODO: Report errors.
@@ -135,6 +139,8 @@ struct inst parse_cinst(struct token initial_char_seq)
     } else {
         // TODO: Report errors.
     }
+
+    return result;
 }
 
 bool ainst_val_valid(struct token char_seq)
