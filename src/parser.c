@@ -78,7 +78,7 @@ struct parser_result parse_ainst()
 
     } else {
         // TODO: Print error.
-        // TODO: handle errors.
+        result.code = -1;
     }
 
     return result;
@@ -110,7 +110,8 @@ struct parser_result parse_cinst(struct token initial_char_seq)
             result.parsed_inst = _inst;
 
         } else {
-            // TODO: Report errors.
+            // TODO: Inform token mismatch and print lexeme
+            result.code = -1;
         }
 
     } else if (expected_separator.type == semicolon) {
@@ -133,11 +134,13 @@ struct parser_result parse_cinst(struct token initial_char_seq)
             result.parsed_inst = _inst;
    
         } else {
-            // TODO: Report errors.
+            // TODO: Inform token mismatch and print lexeme
+            result.code = -1;
         }
 
     } else {
-        // TODO: Report errors.
+        // TODO: Inform token mismatch and print lexeme
+        result.code = -1;
     }
 
     return result;

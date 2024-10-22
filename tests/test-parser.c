@@ -55,7 +55,7 @@ void test_parsing_cinst()
 {
     struct parser_result result;
     
-    result = parse("D=M+1\n");
+    result = parse("\t D=M+1\n");
     
     tst_true(result.code == 0);
     tst_true(result.parsed_inst.type == c_inst_type);
@@ -64,7 +64,7 @@ void test_parsing_cinst()
     free(result.parsed_inst.c_inst.dest);
     free(result.parsed_inst.c_inst.comp);
 
-    result = parse("D-1;JMP\n");
+    result = parse("  D-1;JMP\n");
 
     tst_true(result.parsed_inst.type == c_inst_type);
     tst_str_equals(result.parsed_inst.c_inst.comp, "D-1");
@@ -96,6 +96,42 @@ void test_parsing_malformed_cinst()
     tst_true(result.code == -1);
 
     result = parse(";asdf\n");
+    tst_true(result.code == -1);
+
+    result = parse("A=   \n");
+    tst_true(result.code == -1);
+
+    result = parse("A=;\n");
+    tst_true(result.code == -1);
+
+    result = parse("A==   \n");
+    tst_true(result.code == -1);
+ 
+    result = parse("A;//\n");
+    tst_true(result.code == -1);
+
+    result = parse("A;   \n");
+    tst_true(result.code == -1);
+
+    result = parse("A;=\n");
+    tst_true(result.code == -1);
+
+    result = parse("A;;   \n");
+    tst_true(result.code == -1);
+ 
+    result = parse("A;//\n");
+    tst_true(result.code == -1);
+
+    result = parse("M \n");
+    tst_true(result.code == -1);
+
+    result = parse("M//\n");
+    tst_true(result.code == -1);
+
+    result = parse("M@\n");
+    tst_true(result.code == -1);
+
+    result = parse("M\t\n");
     tst_true(result.code == -1);
 }
 
