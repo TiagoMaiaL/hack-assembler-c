@@ -73,6 +73,7 @@ struct parser_result parse_ainst()
     return result;
 }
 
+// TODO: Refactor error handling code to provide assertive msgs.
 struct parser_result parse_cinst(struct token initial_char_seq)
 {
     struct parser_result result = make_empty_result();
@@ -149,7 +150,18 @@ bool ainst_val_valid(struct token char_seq)
     return true;
 }
 
-// TODO: Create function to check if string is inside array of strings.
+bool contains_str(char *str, const char *strs[], int count)
+{
+    bool in = false;
+
+    for (int i = 0; i < count; ++i) {
+        if (strcmp(strs[i], str) == 0) {
+            return true;
+        }
+    }
+
+    return in;
+}
 
 #define DESTS_COUNT 7
 const char *valid_dests[] = {
@@ -164,15 +176,7 @@ const char *valid_dests[] = {
 
 bool cinst_dest_valid(struct token _token)
 {
-    bool is_valid = false;
-
-    for (int i = 0; i < DESTS_COUNT; ++i) {
-        if (strcmp(valid_dests[i], _token.lexeme) == 0) {
-            return true;
-        }
-    }
-
-    return is_valid;
+    return contains_str(_token.lexeme, valid_dests, DESTS_COUNT);
 }
 
 #define FUNCS_COUNT 28
@@ -209,15 +213,7 @@ const char *valid_funcs[] = {
 
 bool cinst_comp_valid(struct token _token)
 {
-    bool is_valid = false;
-
-    for (int i = 0; i < FUNCS_COUNT; ++i) {
-        if (strcmp(valid_funcs[i], _token.lexeme) == 0) {
-            return true;
-        }
-    }
-
-    return is_valid;
+    return contains_str(_token.lexeme, valid_funcs, FUNCS_COUNT);
 }
 
 #define JMPS_COUNT 7
@@ -233,15 +229,7 @@ const char *valid_jmps[] = {
 
 bool cinst_jmp_valid(struct token _token)
 {
-    bool is_valid = false;
-
-    for (int i = 0; i < JMPS_COUNT; ++i) {
-        if (strcmp(valid_jmps[i], _token.lexeme) == 0) {
-            return true;
-        }
-    }
-
-    return is_valid;
+    return contains_str(_token.lexeme, valid_jmps, JMPS_COUNT);
 }
 
 
