@@ -52,20 +52,21 @@ struct parser_result parse(char *source_line)
     return make_empty_result();
 }
 
-//TODO: Free all unused memory for lexemes.
 struct parser_result parse_ainst()
 {
     struct parser_result result = make_empty_result();
+    result.parsed_inst.type = a_inst_type;
+
     struct token expected_char_seq = next_token();
 
     if (expected_char_seq.type == char_sequence && 
         ainst_val_valid(expected_char_seq)
     ) {
-        result.parsed_inst.type = a_inst_type;
         result.parsed_inst.a_inst.val = expected_char_seq.lexeme;
 
     } else {
         // TODO: Print error.
+        free(expected_char_seq.lexeme);
         result.code = -1;
     }
 
@@ -78,12 +79,11 @@ struct parser_result parse_cinst(struct token initial_char_seq)
     result.parsed_inst.type = c_inst_type;
 
     struct token expected_separator = next_token(); // = or ;
+    free(expected_separator.lexeme); // won't be used.
 
     if (expected_separator.type == equals &&
         cinst_dest_valid(initial_char_seq)
     ) {
-        free(expected_separator.lexeme);
-
         struct token dest = initial_char_seq;
         struct token expected_comp = next_token();
 
@@ -95,14 +95,14 @@ struct parser_result parse_cinst(struct token initial_char_seq)
 
         } else {
             // TODO: Inform token mismatch and print lexeme
+            free(dest.lexeme);
+            free(expected_comp.lexeme);
             result.code = -1;
         }
 
     } else if (expected_separator.type == semicolon &&
                cinst_comp_valid(initial_char_seq)
     ) {
-        free(expected_separator.lexeme);
-    
         struct token comp = initial_char_seq;
         struct token expected_jmp = next_token();
 
@@ -114,11 +114,14 @@ struct parser_result parse_cinst(struct token initial_char_seq)
 
         } else {
             // TODO: Inform token mismatch and print lexeme
+            free(comp.lexeme);
+            free(expected_jmp.lexeme);
             result.code = -1;
         }
 
     } else {
         // TODO: Inform token mismatch and print lexeme
+        free(initial_char_seq.lexeme);
         result.code = -1;
     }
 
@@ -145,6 +148,8 @@ bool ainst_val_valid(struct token char_seq)
 
     return true;
 }
+
+// TODO: Create function to check if string is inside array of strings.
 
 #define DESTS_COUNT 7
 const char *valid_dests[] = {
