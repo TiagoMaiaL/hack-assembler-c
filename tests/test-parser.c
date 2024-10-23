@@ -83,7 +83,13 @@ void test_parsing_invalid_cinst_dest()
 
 void test_parsing_invalid_cinst_comp()
 {
-    tst_true(0);
+    struct parser_result result;
+
+    result = parse("D=some_invalid_computation\n");
+    tst_true(result.code == -1);
+
+    result = parse("some_invalid_computation;JMP\n");
+    tst_true(result.code == -1);
 }
 
 void test_parsing_invalid_cinst_jmp()

@@ -96,7 +96,9 @@ struct parser_result parse_cinst(struct token initial_char_seq)
         struct token dest = initial_char_seq;
         struct token expected_comp = next_token();
 
-        if (expected_comp.type == char_sequence) {
+        if (expected_comp.type == char_sequence &&
+            cinst_comp_valid(expected_comp)
+        ) {
             struct cinst _cinst;
             _cinst.dest = dest.lexeme;
             _cinst.comp = expected_comp.lexeme;
@@ -114,7 +116,9 @@ struct parser_result parse_cinst(struct token initial_char_seq)
             result.code = -1;
         }
 
-    } else if (expected_separator.type == semicolon) {
+    } else if (expected_separator.type == semicolon &&
+               cinst_comp_valid(initial_char_seq)
+    ) {
         free(expected_separator.lexeme);
     
         struct token comp = initial_char_seq;
@@ -193,10 +197,49 @@ bool cinst_dest_valid(struct token _token)
     return is_valid;
 }
 
-bool cinst_comp_valid(struct token)
+#define FUNCS_COUNT 28
+const char *valid_funcs[] = {
+    "0",
+    "1",
+    "-1",
+    "D",
+    "A",
+    "!D",
+    "!A",
+    "-D",
+    "-A",
+    "D+1",
+    "A+1",
+    "D-1",
+    "A-1",
+    "D+A",
+    "D-A",
+    "A-D",
+    "D&A",
+    "D|A",
+    "M",
+    "!M",
+    "-M",
+    "M+1",
+    "M-1",
+    "D+M",
+    "D-M",
+    "M-D",
+    "D&M",
+    "D|M"
+};
+
+bool cinst_comp_valid(struct token _token)
 {
-    // TODO:
-    return false;
+    bool is_valid = false;
+
+    for (int i = 0; i < FUNCS_COUNT; ++i) {
+        if (strcmp(valid_funcs[i], _token.lexeme) == 0) {
+            return true;
+        }
+    }
+
+    return is_valid;
 }
 
 #define JMPS_COUNT 7
