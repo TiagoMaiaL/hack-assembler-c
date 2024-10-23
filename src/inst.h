@@ -9,7 +9,7 @@ struct cinst {
 };
 
 enum inst_type {
-    none, // TODO: Add test for empty inst factory.
+    none,
     a_inst_type, 
     c_inst_type
 };

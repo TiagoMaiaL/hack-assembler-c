@@ -71,6 +71,22 @@ void test_parsing_cinst()
     tst_str_equals(result.parsed_inst.c_inst.jmp, "JMP");
     free(result.parsed_inst.c_inst.comp);
     free(result.parsed_inst.c_inst.jmp);
+
+    result = parse("// some comment\n");
+
+    tst_true(result.parsed_inst.type == none);
+    tst_true(result.parsed_inst.a_inst.val == NULL);
+    tst_true(result.parsed_inst.c_inst.dest == NULL);
+    tst_true(result.parsed_inst.c_inst.comp == NULL);
+    tst_true(result.parsed_inst.c_inst.jmp == NULL);
+    
+    result = parse("   \t\n");
+
+    tst_true(result.parsed_inst.type == none);
+    tst_true(result.parsed_inst.a_inst.val == NULL);
+    tst_true(result.parsed_inst.c_inst.dest == NULL);
+    tst_true(result.parsed_inst.c_inst.comp == NULL);
+    tst_true(result.parsed_inst.c_inst.jmp == NULL);
 }
 
 void test_parsing_invalid_cinst_dest()

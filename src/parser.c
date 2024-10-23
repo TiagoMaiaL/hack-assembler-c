@@ -11,6 +11,7 @@ bool ainst_val_valid(struct token);
 bool cinst_dest_valid(struct token);
 bool cinst_comp_valid(struct token);
 bool cinst_jmp_valid(struct token);
+struct parser_result make_empty_result();
 
 struct parser_result parse(char *source_line)
 {
@@ -42,37 +43,26 @@ struct parser_result parse(char *source_line)
             // TODO: Print error message.
             free(curr_token.lexeme);
 
-            struct parser_result result;
+            struct parser_result result = make_empty_result();
             result.code = -1;
             return result;
         }
     }
 
-    // TODO: Return empty positive parser_result
-    // TODO: Test return of empty parser_result
-    // TODO: Add factory for empty parser_result
+    return make_empty_result();
 }
 
+//TODO: Free all unused memory for lexemes.
 struct parser_result parse_ainst()
 {
-
-    // TODO: Create result factory.
-    struct parser_result result;
-
+    struct parser_result result = make_empty_result();
     struct token expected_char_seq = next_token();
 
     if (expected_char_seq.type == char_sequence && 
         ainst_val_valid(expected_char_seq)
     ) {
-        struct ainst _ainst;
-        _ainst.val = expected_char_seq.lexeme;
-
-        struct inst _inst;
-        _inst.type = a_inst_type;
-        _inst.a_inst = _ainst;
-
-        result.code = 0;
-        result.parsed_inst = _inst;
+        result.parsed_inst.type = a_inst_type;
+        result.parsed_inst.a_inst.val = expected_char_seq.lexeme;
 
     } else {
         // TODO: Print error.
@@ -84,7 +74,8 @@ struct parser_result parse_ainst()
 
 struct parser_result parse_cinst(struct token initial_char_seq)
 {
-    struct parser_result result;
+    struct parser_result result = make_empty_result();
+    result.parsed_inst.type = c_inst_type;
 
     struct token expected_separator = next_token(); // = or ;
 
@@ -99,17 +90,8 @@ struct parser_result parse_cinst(struct token initial_char_seq)
         if (expected_comp.type == char_sequence &&
             cinst_comp_valid(expected_comp)
         ) {
-            struct cinst _cinst;
-            _cinst.dest = dest.lexeme;
-            _cinst.comp = expected_comp.lexeme;
-            _cinst.jmp = NULL;
-
-            struct inst _inst;
-            _inst.type = c_inst_type;
-            _inst.c_inst = _cinst;
-
-            result.code = 0;
-            result.parsed_inst = _inst;
+            result.parsed_inst.c_inst.dest = dest.lexeme;
+            result.parsed_inst.c_inst.comp = expected_comp.lexeme;
 
         } else {
             // TODO: Inform token mismatch and print lexeme
@@ -127,18 +109,9 @@ struct parser_result parse_cinst(struct token initial_char_seq)
         if (expected_jmp.type == char_sequence &&
             cinst_jmp_valid(expected_jmp)
         ) {
-            struct cinst _cinst;
-            _cinst.comp = comp.lexeme;
-            _cinst.jmp = expected_jmp.lexeme;
-            _cinst.dest = NULL;
+            result.parsed_inst.c_inst.comp = comp.lexeme;
+            result.parsed_inst.c_inst.jmp = expected_jmp.lexeme;
 
-            struct inst _inst;
-            _inst.type = c_inst_type;
-            _inst.c_inst = _cinst;
-
-            result.code = 0;
-            result.parsed_inst = _inst;
-   
         } else {
             // TODO: Inform token mismatch and print lexeme
             result.code = -1;
@@ -265,3 +238,27 @@ bool cinst_jmp_valid(struct token _token)
 
     return is_valid;
 }
+
+
+struct parser_result make_empty_result()
+{
+    struct ainst _ainst;
+    _ainst.val = NULL;
+
+    struct cinst _cinst;
+    _cinst.dest = NULL;
+    _cinst.comp = NULL;
+    _cinst.jmp = NULL;
+
+    struct inst _inst;
+    _inst.type = none;
+    _inst.a_inst = _ainst;
+    _inst.c_inst = _cinst;
+
+    struct parser_result result;
+    result.code = 0;
+    result.parsed_inst = _inst;
+
+    return result;
+}
+
