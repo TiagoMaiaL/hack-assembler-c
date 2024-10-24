@@ -53,7 +53,7 @@ struct parser_result parse(char *source_line)
             free(curr_token.lexeme);
 
             struct parser_result result = make_empty_result();
-            result.code = -1;
+            result.code = PARSE_ERROR;
             return result;
         }
     }
@@ -80,7 +80,7 @@ struct parser_result parse_ainst()
             expected_char_seq.lexeme
         );
         free(expected_char_seq.lexeme);
-        result.code = -1;
+        result.code = PARSE_ERROR;
     }
 
     return result;
@@ -109,7 +109,7 @@ struct parser_result parse_cinst(struct token initial_char_seq)
 
         struct parser_result result = make_empty_result();
         result.parsed_inst.type = c_inst_type;
-        result.code = -1;
+        result.code = PARSE_ERROR;
         return result;
     }
 }
@@ -126,7 +126,7 @@ struct parser_result parse_assign_cinst(struct token dest)
             dest.lexeme
         );
         free(dest.lexeme);
-        result.code = -1;
+        result.code = PARSE_ERROR;
         return result;
     }
 
@@ -146,7 +146,7 @@ struct parser_result parse_assign_cinst(struct token dest)
         );
         free(dest.lexeme);
         free(expected_comp.lexeme);
-        result.code = -1;
+        result.code = PARSE_ERROR;
     }
 
     return result;
@@ -165,7 +165,7 @@ struct parser_result parse_jmp_cinst(struct token comp)
         );
 
         free(comp.lexeme);
-        result.code = -1;
+        result.code = PARSE_ERROR;
         return result;
     }
 
@@ -185,7 +185,7 @@ struct parser_result parse_jmp_cinst(struct token comp)
         );
         free(comp.lexeme);
         free(expected_jmp.lexeme);
-        result.code = -1;
+        result.code = PARSE_ERROR;
     }
 
     return result;
@@ -310,16 +310,15 @@ struct parser_result make_empty_result()
     _inst.c_inst = _cinst;
 
     struct parser_result result;
-    result.code = 0;
+    result.code = PARSE_SUCCESS;
     result.parsed_inst = _inst;
 
     return result;
 }
 
-
 void print_error(char *header, char *expected, char *found)
 {
-    errno = -1;
+    errno = PARSE_ERROR;
     perror(header);
     printf("Expected: %s, Found: '%s'\n", expected, found);
 }
