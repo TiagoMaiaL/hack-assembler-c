@@ -318,6 +318,7 @@ struct parser_result make_empty_result()
 
 void print_error(char *header, char *expected, char *found)
 {
+    // TODO: Print the line number.
     errno = PARSE_ERROR;
     perror(header);
     printf("Expected: %s, Found: '%s'\n", expected, found);
