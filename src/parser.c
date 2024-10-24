@@ -1,5 +1,7 @@
 #include <assert.h>
 #include <ctype.h>
+#include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "lexer.h"
@@ -14,6 +16,7 @@ bool cinst_dest_valid(struct token);
 bool cinst_comp_valid(struct token);
 bool cinst_jmp_valid(struct token);
 struct parser_result make_empty_result();
+void print_error(char *header, char *expected, char *found);
 
 struct parser_result parse(char *source_line)
 {
@@ -42,7 +45,11 @@ struct parser_result parse(char *source_line)
             return parse_cinst(curr_token);
 
         } else {
-            // TODO: Print error message.
+            print_error(
+                "Unexpected token at instruction start",
+                "'@' or 'char_sequence'",
+                curr_token.lexeme
+            );
             free(curr_token.lexeme);
 
             struct parser_result result = make_empty_result();
@@ -67,7 +74,11 @@ struct parser_result parse_ainst()
         result.parsed_inst.a_inst.val = expected_char_seq.lexeme;
 
     } else {
-        // TODO: Print error.
+        print_error(
+            "Error parsing a-instruction address",
+            "'char_sequence' with numbers",
+            expected_char_seq.lexeme
+        );
         free(expected_char_seq.lexeme);
         result.code = -1;
     }
@@ -88,8 +99,12 @@ struct parser_result parse_cinst(struct token initial_char_seq)
         return parse_jmp_cinst(initial_char_seq);
 
     } else {
+        print_error(
+            "Error parsing c-instruction",
+            "'=' or ';'",
+            expected_separator.lexeme
+        );
         free(initial_char_seq.lexeme);
-        // TODO: Inform token mismatch and print lexeme
         free(expected_separator.lexeme);
 
         struct parser_result result = make_empty_result();
@@ -105,7 +120,11 @@ struct parser_result parse_assign_cinst(struct token dest)
     result.parsed_inst.type = c_inst_type;
 
     if (!cinst_dest_valid(dest)) {
-        // TODO: Print error msg.
+        print_error(
+            "Invalid destination for c-instruction",
+            "A, D, M ...",
+            dest.lexeme
+        );
         free(dest.lexeme);
         result.code = -1;
         return result;
@@ -120,7 +139,11 @@ struct parser_result parse_assign_cinst(struct token dest)
         result.parsed_inst.c_inst.comp = expected_comp.lexeme;
 
     } else {
-        // TODO: Inform token mismatch and print lexeme
+        print_error(
+            "Invalid computation for c-instruction",
+            "0, 1, -1, D, M+1, D+M, ...",
+            expected_comp.lexeme
+        );
         free(dest.lexeme);
         free(expected_comp.lexeme);
         result.code = -1;
@@ -135,7 +158,12 @@ struct parser_result parse_jmp_cinst(struct token comp)
     result.parsed_inst.type = c_inst_type;
 
     if (!cinst_comp_valid(comp)) {
-        // TODO: Print error msg.
+        print_error(
+            "Invalid computation for c-instruction",
+            "0, 1, -1, D, M+1, D+M, ...",
+            comp.lexeme
+        );
+
         free(comp.lexeme);
         result.code = -1;
         return result;
@@ -150,7 +178,11 @@ struct parser_result parse_jmp_cinst(struct token comp)
         result.parsed_inst.c_inst.jmp = expected_jmp.lexeme;
 
     } else {
-        // TODO: Inform token mismatch and print lexeme
+        print_error(
+            "Invalid jump for c-instruction",
+            "JEQ, JLT, JMP, JGT ...",
+            expected_jmp.lexeme
+        );
         free(comp.lexeme);
         free(expected_jmp.lexeme);
         result.code = -1;
@@ -283,3 +315,12 @@ struct parser_result make_empty_result()
 
     return result;
 }
+
+
+void print_error(char *header, char *expected, char *found)
+{
+    errno = -1;
+    perror(header);
+    printf("Expected: %s, Found: '%s'\n", expected, found);
+}
+
