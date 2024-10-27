@@ -2,12 +2,10 @@
 #include "cinst-bin.h"
 #include "utils.h"
 
-// TODO: Document each one of these functions.
 void comp_bin(char *comp, char *bin);
 void dest_bin(char *dest, char *bin);
 void jmp_bin(char *jmp, char *bin);
 
-// TODO: Define constants for cinst_bin.
 #define INST_HEADER "111"
 #define HEADER_LEN  3
 #define COMP_LEN    7
@@ -107,6 +105,11 @@ void dest_bin(char *instdest, char *bin)
     for (i = 0; i < DEST_LEN; ++i)
         bin[i] = OFF;
 
+    if (instdest == NULL) {
+        bin[DEST_LEN] = '\0';
+        return;
+    }
+
     i = 0;
 
     while (instdest[i] != '\0') {
@@ -129,6 +132,11 @@ void jmp_bin(char instjmp[], char bin[])
 {
     for (int i = 0; i < JMP_LEN; ++i)
         bin[i] = OFF;
+
+    if (instjmp == NULL) {
+        bin[3] = '\0';
+        return;
+    }
 
     if (streq(instjmp, "JMP")) {
         for (int i = 0; i < JMP_LEN; ++i)

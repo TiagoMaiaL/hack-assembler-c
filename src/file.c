@@ -9,14 +9,14 @@ void open_in(char *path)
 {
     _is_eof = false;
     in_file = fopen(path, "r");
-}
 
-char *read_line() {
     if (in_file == NULL) {
         perror("input file");
-        return NULL;
     }
+}
 
+char *read_line()
+{
     long line_len;
     int c;
 
@@ -57,11 +57,16 @@ bool is_eof() {
 void open_out(char *path)
 {
     out_file = fopen(path, "w");
+
+    if (out_file == NULL) {
+        perror("output file");
+    }
 }
 
 void out(char *line)
 {
-    // TODO:
+    fputs(line, out_file);
+    fputc('\n', out_file);
 }
 
 void close_all()
@@ -74,3 +79,4 @@ void close_all()
         fclose(out_file);
     }
 }
+

@@ -1,3 +1,5 @@
+#ifndef INST_H
+#define INST_H
 struct ainst {
     char *val;
 };
@@ -19,3 +21,4 @@ struct inst {
     struct cinst c_inst;
     struct ainst a_inst;
 };
+#endif
