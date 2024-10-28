@@ -237,5 +237,12 @@ void test_lexer_multiple_tokens()
     tst_true(at_sign_b.type == at);
     tst_str_equals(at_sign.lexeme, "@");
     free(at_sign.lexeme);
+
+    lex_line("\n");
+    
+    struct token empty = next_token();
+    tst_true(empty.type == whitespace);
+    tst_str_equals(empty.lexeme, "\n");
+    free(empty.lexeme);
 }
 

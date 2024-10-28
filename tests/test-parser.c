@@ -87,6 +87,18 @@ void test_parsing_cinst()
     tst_true(result.parsed_inst.c_inst.dest == NULL);
     tst_true(result.parsed_inst.c_inst.comp == NULL);
     tst_true(result.parsed_inst.c_inst.jmp == NULL);
+
+    char buff[3];
+    buff[0] = 13;
+    buff[1] = 10;
+    buff[2] = '\0';
+    result = parse(buff);
+
+    tst_true(result.parsed_inst.type == none);
+    tst_true(result.parsed_inst.a_inst.val == NULL);
+    tst_true(result.parsed_inst.c_inst.dest == NULL);
+    tst_true(result.parsed_inst.c_inst.comp == NULL);
+    tst_true(result.parsed_inst.c_inst.jmp == NULL);
 }
 
 void test_parsing_invalid_cinst_dest()

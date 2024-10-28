@@ -19,6 +19,7 @@ bool is_equals(char c);
 bool is_semicolon(char c);
 bool is_at_sign(char c);
 bool is_newline(char c);
+bool is_control_char(char c);
 char *copy_substr(int i, int j, char *src);
 
 char *lexing_line;
@@ -89,6 +90,13 @@ struct token next_token()
                 state = in_char_sequence;
                 token_start = i;
                 lexed_token.type = char_sequence;
+
+            } else {
+                token_start = i;
+                token_end = i;
+                lexed_token.type = whitespace;
+                ++i;
+                break;
             }
         }
 
@@ -144,6 +152,7 @@ bool is_general_char(char c)
             !is_semicolon(c) &&
             !is_newline(c) &&
             !is_at_sign(c) &&
+            !is_control_char(c) &&
             c != '\0';
 }
 
@@ -165,6 +174,11 @@ bool is_at_sign(char c)
 bool is_newline(char c)
 {
     return c == '\n';
+}
+
+bool is_control_char(char c)
+{
+    return c >= 0 && c <= 31;
 }
 
 char *copy_substr(int i, int j, char *src)
