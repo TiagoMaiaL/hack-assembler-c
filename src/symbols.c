@@ -10,7 +10,7 @@ static int *address_store;
 
 int hash(char *symbol);
 
-void store(int address, char *symbol)
+void store(int _address, char *symbol)
 {
     if (address_store == NULL) {
         address_store = malloc(sizeof(int) * STORE_SIZE);
@@ -19,9 +19,11 @@ void store(int address, char *symbol)
     }
 
     int i = hash(symbol);
+
     assert(i < STORE_SIZE);
-    // TODO: Assert over colisions.
-    *(address_store + i) = address;
+    assert(address(symbol) == NULL_ADDRESS);
+
+    *(address_store + i) = _address;
 }
 
 int address(char *symbol)
@@ -58,5 +60,5 @@ int hash(char symbol[])
         i++;
     }
 
-    return hashVal;
+    return hashVal % STORE_SIZE;
 }
