@@ -39,6 +39,7 @@ int address(char *symbol)
 void free_store()
 {
     free(address_store);
+    address_store = NULL;
 }
 
 int hash(char symbol[])
@@ -54,6 +55,7 @@ int hash(char symbol[])
 
     while ((c = symbol[i]) != '\0') {
         hashVal += c;
+        i++;
     }
 
     return hashVal;
