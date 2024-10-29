@@ -14,9 +14,9 @@ C Implementation of the Hack assembler for the Hack computing system described i
 - [x] Unit-test tokenization module
 - [x] Parsing module creating instructions from tokens
 - [x] Unit-test parsing module
-- [ ] Add module to read an input file and write to an output one
-- [ ] Add module to read lines, parse, and translate
-- [ ] Test the assembler with simpler hack asm files
+- [x] Add module to read an input file and write to an output one
+- [x] Add module to read lines, parse, and translate
+- [x] Test the assembler with simpler hack asm files
 
 ### Phase 2
 - [ ] hash-table for symbols
