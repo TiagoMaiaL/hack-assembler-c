@@ -1,5 +1,7 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "symbols.h"
 
 #define STORE_SIZE 10000
@@ -17,6 +19,8 @@ void store(int address, char *symbol)
     }
 
     int i = hash(symbol);
+    assert(i < STORE_SIZE);
+    // TODO: Assert over colisions.
     *(address_store + i) = address;
 }
 
@@ -39,6 +43,8 @@ void free_store()
 
 int hash(char symbol[])
 {
+    assert(strlen(symbol) > 0);
+
     int hashVal;
     int i;
     int c;
