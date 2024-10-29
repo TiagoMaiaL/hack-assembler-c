@@ -19,8 +19,8 @@ C Implementation of the Hack assembler for the Hack computing system described i
 - [x] Test the assembler with simpler hack asm files
 
 ### Phase 2
-- [ ] hash-table for symbols
-- [ ] Unit-test hash-table
+- [x] hash-table for symbols
+- [x] Unit-test hash-table
 - [ ] Symbol parsing phase
 - [ ] Unit-test symbol parsing phase
 - [ ] Symbol substitution phase
