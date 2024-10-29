@@ -6,6 +6,7 @@ source_files=(
     '../src/cinst-bin.c'
     '../src/lexer.c'
     '../src/parser.c'
+    '../src/symbols.c'
 )
 test_files=(
     '../tests/test-entry.c'
@@ -15,6 +16,7 @@ test_files=(
     '../tests/test-cinst-bin.c'
     '../tests/test-lexer.c'
     '../tests/test-parser.c'
+    '../tests/test-symbols.c'
 )
 files=("${source_files[@]}" "${test_files[@]}")
 

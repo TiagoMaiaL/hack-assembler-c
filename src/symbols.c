@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include "symbols.h"
 
@@ -21,6 +22,11 @@ void store(int address, char *symbol)
 
 int address(char *symbol)
 {
+    if (address_store == NULL) {
+        perror("Attempting to access unintialized store");
+        return NULL_ADDRESS;
+    }
+
     int i = hash(symbol);
     int address = *(address_store + i);
     return address;
@@ -44,5 +50,5 @@ int hash(char symbol[])
         hashVal += c;
     }
 
-    return hasVal;
+    return hashVal;
 }
