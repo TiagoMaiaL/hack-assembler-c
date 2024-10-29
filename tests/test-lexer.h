@@ -10,4 +10,5 @@ void test_lexer_char_sequence();
 void test_lexer_equals_sign();
 void test_lexer_semicolon_sign();
 void test_lexer_at_sign();
+void test_lexer_symbol();
 void test_lexer_multiple_tokens();

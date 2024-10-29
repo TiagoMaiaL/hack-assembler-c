@@ -7,7 +7,7 @@ enum token_type {
     equals, // dest=computation
     semicolon, // computation;jmp
     at, // @_______...
-    // TODO: Add a token for symbol
+    symbol // (symbol_name)
 };
 
 struct token {

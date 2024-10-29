@@ -7,7 +7,8 @@ enum lex_state {
     none,
     in_whitespace,
     in_comment,
-    in_char_sequence
+    in_char_sequence,
+    in_symbol
 };
 
 enum lex_state state;
@@ -20,6 +21,8 @@ bool is_semicolon(char c);
 bool is_at_sign(char c);
 bool is_newline(char c);
 bool is_control_char(char c);
+bool is_symbol_start(char c);
+bool is_symbol_end(char c);
 char *copy_substr(int i, int j, char *src);
 
 char *lexing_line;
@@ -91,6 +94,11 @@ struct token next_token()
                 token_start = i;
                 lexed_token.type = char_sequence;
 
+            } else if (is_symbol_start(c)) {
+                state = in_symbol;
+                token_start = i;
+                lexed_token.type = symbol;
+
             } else {
                 token_start = i;
                 token_end = i;
@@ -103,6 +111,7 @@ struct token next_token()
         bool is_comment_end;
         bool is_whitespace_end;
         bool is_char_sequence_end;
+        bool is_symbol_token_end;
 
         is_comment_end = is_newline(c) && 
                          state == in_comment;
@@ -113,11 +122,19 @@ struct token next_token()
         is_char_sequence_end = !is_general_char(c) &&
                                state == in_char_sequence;
 
+        is_symbol_token_end = is_symbol_end(c) &&
+                              state == in_symbol;
+
         if (is_comment_end || 
             is_whitespace_end || 
             is_char_sequence_end
         ) {
             token_end = i - 1;
+            break;
+        }
+
+        if (is_symbol_token_end) {
+            token_end = i;
             break;
         }
         
@@ -153,6 +170,8 @@ bool is_general_char(char c)
             !is_newline(c) &&
             !is_at_sign(c) &&
             !is_control_char(c) &&
+            !is_symbol_start(c) &&
+            !is_symbol_end(c) &&
             c != '\0';
 }
 
@@ -179,6 +198,16 @@ bool is_newline(char c)
 bool is_control_char(char c)
 {
     return c >= 0 && c <= 31;
+}
+
+bool is_symbol_start(char c)
+{
+    return c == '(';
+}
+
+bool is_symbol_end(char c)
+{
+    return c == ')';
 }
 
 char *copy_substr(int i, int j, char *src)

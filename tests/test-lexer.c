@@ -16,6 +16,7 @@ void test_lexer()
     tst_unit("Equals sign", test_lexer_equals_sign);
     tst_unit("Semicolon", test_lexer_semicolon_sign);
     tst_unit("At sign", test_lexer_at_sign);
+    tst_unit("Symbol", test_lexer_symbol);
     tst_unit("Multiple tokens", test_lexer_multiple_tokens);
 
     tst_suite_finish();
@@ -183,6 +184,15 @@ void test_lexer_at_sign()
     tst_true(at_sign.type == at);
     tst_str_equals(at_sign.lexeme, "@");
     free(at_sign.lexeme);
+}
+
+void test_lexer_symbol()
+{
+    lex_line("(some_symbol)\n");
+    struct token symbol_token = next_token();
+    tst_true(symbol_token.type == symbol);
+    tst_str_equals(symbol_token.lexeme, "(some_symbol)");
+    free(symbol_token.lexeme);
 }
 
 void test_lexer_multiple_tokens()
