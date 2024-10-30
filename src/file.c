@@ -54,6 +54,12 @@ bool is_eof() {
     return _is_eof;
 }
 
+void seek_start()
+{
+    fseek(in_file, 0, SEEK_SET);
+    _is_eof = false;
+}
+
 void open_out(char *path)
 {
     out_file = fopen(path, "w");

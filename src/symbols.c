@@ -20,6 +20,8 @@ void store(int _address, char *symbol)
 
     int i = hash(symbol);
 
+    printf("symbol = %s, index = %d \n", symbol, i);
+
     assert(i < STORE_SIZE);
     assert(address(symbol) == NULL_ADDRESS);
 
@@ -29,7 +31,6 @@ void store(int _address, char *symbol)
 int address(char *symbol)
 {
     if (address_store == NULL) {
-        perror("Attempting to access unintialized store");
         return NULL_ADDRESS;
     }
 
@@ -40,6 +41,10 @@ int address(char *symbol)
 
 void free_store()
 {
+    if (address_store == NULL) {
+        return;
+    }
+
     free(address_store);
     address_store = NULL;
 }
@@ -62,3 +67,17 @@ int hash(char symbol[])
 
     return hashVal % STORE_SIZE;
 }
+
+#define ADDRESS_START 16
+static int curr_address = ADDRESS_START;
+
+void increase_address_count()
+{
+    ++curr_address;
+}
+
+int next_address()
+{
+    return curr_address;
+}
+

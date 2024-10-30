@@ -45,6 +45,34 @@ void test_parsing_ainst()
     tst_true(result.parsed_inst.type == a_inst_type);
     tst_str_equals(result.parsed_inst.a_inst.val, "1234");
     free(result.parsed_inst.a_inst.val);
+
+    result = parse("@SP\n");
+
+    tst_true(result.code == 0);
+    tst_true(result.parsed_inst.type == a_inst_type);
+    tst_str_equals(result.parsed_inst.a_inst.val, "SP");
+    free(result.parsed_inst.a_inst.val);
+
+    result = parse("@END_EQ\n");
+
+    tst_true(result.code == 0);
+    tst_true(result.parsed_inst.type == a_inst_type);
+    tst_str_equals(result.parsed_inst.a_inst.val, "END_EQ");
+    free(result.parsed_inst.a_inst.val);
+
+    result = parse("@sys.init\n");
+
+    tst_true(result.code == 0);
+    tst_true(result.parsed_inst.type == a_inst_type);
+    tst_str_equals(result.parsed_inst.a_inst.val, "sys.init");
+    free(result.parsed_inst.a_inst.val);
+
+    result = parse("@ball.setdestination$if_true0\n");
+
+    tst_true(result.code == 0);
+    tst_true(result.parsed_inst.type == a_inst_type);
+    tst_str_equals(result.parsed_inst.a_inst.val, "ball.setdestination$if_true0");
+    free(result.parsed_inst.a_inst.val);
 }
 
 void test_parsing_invalid_ainst()
@@ -182,13 +210,44 @@ void test_parsing_malformed_cinst()
 
 void test_parsing_symbol()
 {
-    struct parser_result result = parse("(some_symbol)\n");
+    struct parser_result result;
+
+    result = parse("(some_symbol)\n");
+
     tst_true(result.code == 0);
     tst_true(result.parsed_inst.type == symbol_type);
     tst_str_equals(
         result.parsed_inst.s_inst.val, 
         "some_symbol"
     );
+
+    result = parse("(ball.new)\n");
+
+    tst_true(result.code == 0);
+    tst_true(result.parsed_inst.type == symbol_type);
+    tst_str_equals(
+        result.parsed_inst.s_inst.val, 
+        "ball.new"
+    );
+
+    result = parse("(ball.setdestination$if_true0)\n");
+
+    tst_true(result.code == 0);
+    tst_true(result.parsed_inst.type == symbol_type);
+    tst_str_equals(
+        result.parsed_inst.s_inst.val, 
+        "ball.setdestination$if_true0"
+    );
+
+    result = parse("(output.createshiftedmap$if_true0 )\n");
+
+    tst_true(result.code == 0);
+    tst_true(result.parsed_inst.type == symbol_type);
+    tst_str_equals(
+        result.parsed_inst.s_inst.val, 
+        "output.createshiftedmap$if_true0"
+    );
+
 }
 
 void test_parsing_malformed_symbol()

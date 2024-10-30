@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,13 +7,16 @@
 #include "cinst-bin.h"
 #include "file.h"
 #include "parser.h"
+#include "symbols.h"
 
 #define EXPECTED_ARGS_COUNT 3
 #define ERROR               -1
 #define SUCCESS             0
 
+static int line_count;
 int collect_symbols();
 int parse_and_translate();
+bool is_variable(char *str);
 
 int main(int argc, char **argv)
 {
@@ -28,26 +32,23 @@ int main(int argc, char **argv)
         return errno;
     }
 
-    collect_symbols();
-    int result = parse_and_translate();
+    if (collect_symbols() == ERROR) {
+        return ERROR;
+    }
+
+    if (parse_and_translate() == ERROR) {
+        return ERROR;
+    }
     
     close_all();
 
-    return result;
+    return SUCCESS;
 }
 
 int collect_symbols()
 {
-    // TODO: start parsing file again
-    // TODO: If instruction is symbol, add entry
-    // TODO: If instruction is a-inst with identifier, add entry
-    // TODO: if instruction is c-inst, continue
-    // TODO: seek in file to beginning.
-    return ERROR;
-}
+    line_count = 0;
 
-int parse_and_translate()
-{
     while (!is_eof()) {
         char *line = read_line();
 
@@ -55,7 +56,75 @@ int parse_and_translate()
             continue;
 
         struct parser_result result = parse(line);
+        free(line);
 
+        if (result.code != PARSE_SUCCESS) {
+            return ERROR;
+        }
+
+        struct inst parsed_inst = result.parsed_inst;
+
+        switch (parsed_inst.type) {
+            case none: continue;
+            
+            case symbol_type:
+                {
+                    char *symbol = parsed_inst.s_inst.val;
+
+                    ++line_count;
+
+                    if (address(symbol) == NULL_ADDRESS)
+                        store(line_count, symbol);
+
+                    free(symbol);
+
+                    break;
+                }
+
+            case a_inst_type:
+                {
+                    char *var = parsed_inst.a_inst.val;
+
+                    if (is_variable(var) &&
+                        address(var) == NULL_ADDRESS
+                    ) {
+                        store(next_address(), var);
+                        increase_address_count();
+                    }
+                    free(var);
+
+                    ++line_count;
+
+                    break;
+                }
+
+            case c_inst_type:
+                ++line_count;
+
+                break;
+        }
+    }
+
+    return SUCCESS;
+}
+
+int parse_and_translate()
+{
+    line_count = 0;
+    seek_start();
+
+    if (errno != 0) {
+        perror("Seeking to line 0");
+        return ERROR;
+    }
+
+    while (!is_eof()) {
+        char *line = read_line();
+
+        if (strlen(line) == 0)
+            continue;
+
+        struct parser_result result = parse(line);
         free(line);
 
         if (result.code != PARSE_SUCCESS) {
@@ -65,11 +134,8 @@ int parse_and_translate()
         char bin[17];
 
         switch (result.parsed_inst.type) {
-            case none:
-                continue;
-
-            case symbol_type:
-                continue;
+            case none: continue;
+            case symbol_type: continue;
 
             case a_inst_type:
                 {
@@ -102,5 +168,10 @@ int parse_and_translate()
     }
 
     return SUCCESS;
+}
+
+bool is_variable(char *str)
+{
+    return isalpha(str[0]);
 }
 

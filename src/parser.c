@@ -81,7 +81,7 @@ struct parser_result parse_ainst()
     } else {
         print_error(
             "Error parsing a-instruction address",
-            "'char_sequence' with numbers",
+            "'char_sequence'",
             expected_char_seq.lexeme
         );
         free(expected_char_seq.lexeme);
@@ -203,14 +203,23 @@ struct parser_result parse_symbol(struct token symbol_token)
 
     int i;
     int c;
+    int len;
 
     i = 0;
+    len = 0;
 
     while ((c = symbol_token.lexeme[i]) != '\0') {
+        // strip whitespaces
         ++i;
+
+        if (c == ' ')
+            continue;
+
+        ++len;
     }
 
-    char *val = malloc((sizeof(char) * i) - 2);
+    // - '(' and ')' delimiters and + '\0'
+    char *val = malloc((sizeof(char) * len) - 2 + 1);
     int j;
 
     i = 0;
@@ -219,12 +228,14 @@ struct parser_result parse_symbol(struct token symbol_token)
     while ((c = symbol_token.lexeme[i]) != '\0') {
         ++i;
 
-        if (c == '(' || c == ')')
+        if (c == '(' || c == ')' || c == ' ')
             continue;
 
         val[j] = c;
         ++j;
     }
+
+    val[j] = '\0';
     
     if (!sinst_val_valid(val)) {
         print_error(
@@ -248,17 +259,30 @@ bool ainst_val_valid(struct token char_seq)
 {
     int c;
     int i;
+    bool is_var;
 
     i = 0;
+    is_var = false;
 
     if (strlen(char_seq.lexeme) == 0) {
         return false;
     }
 
+    if (isalpha(char_seq.lexeme[0])) {
+        is_var = true;
+    }
+
     while ((c = char_seq.lexeme[i]) != '\0') {
-        if (!isdigit(c)) {
+        if (is_var && (!isalnum(c) && 
+                       c != '_' && 
+                       c != '.' &&
+                       c != '$')) {
+            return false;
+
+        } else if (!is_var && !isdigit(c)) {
             return false;
         }
+
         ++i;
     }
 
@@ -357,9 +381,12 @@ bool sinst_val_valid(char *val)
     has_alpha = false;
     valid = true;
     i = 0;
-
+        
     while ((c = val[i]) != '\0') {
-        if (!isalnum(c) && c != '_') {
+        if (!isalnum(c) && 
+            c != '_' && 
+            c != '.' &&
+            c != '$') {
             valid = false;
             break;
         }
