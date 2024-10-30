@@ -7,3 +7,5 @@ void test_parsing_invalid_cinst_dest();
 void test_parsing_invalid_cinst_comp();
 void test_parsing_invalid_cinst_jmp();
 void test_parsing_malformed_cinst();
+void test_parsing_symbol();
+void test_parsing_malformed_symbol();

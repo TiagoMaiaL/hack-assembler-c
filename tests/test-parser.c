@@ -26,6 +26,11 @@ void test_parser()
         "Malformed C-inst",
         test_parsing_malformed_cinst
     );
+    tst_unit("Symbol", test_parsing_symbol);
+    tst_unit(
+        "Malformed symbol", 
+        test_parsing_malformed_symbol
+    );
 
     tst_suite_finish();
 }
@@ -175,3 +180,30 @@ void test_parsing_malformed_cinst()
     tst_true(result.code == -1);
 }
 
+void test_parsing_symbol()
+{
+    struct parser_result result = parse("(some_symbol)\n");
+    tst_true(result.code == 0);
+    tst_true(result.parsed_inst.type == symbol_type);
+    tst_str_equals(
+        result.parsed_inst.s_inst.val, 
+        "some_symbol"
+    );
+}
+
+void test_parsing_malformed_symbol()
+{
+    struct parser_result result;
+
+    result = parse("(   )\n");
+    tst_true(result.code == -1);
+    
+    result = parse("(12332)\n");
+    tst_true(result.code == -1);
+
+    result = parse("(//asdf)\n");
+    tst_true(result.code == -1);
+
+    result = parse("(.+;=)\n");
+    tst_true(result.code == -1);
+}

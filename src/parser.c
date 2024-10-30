@@ -11,10 +11,12 @@ struct parser_result parse_ainst();
 struct parser_result parse_cinst(struct token);
 struct parser_result parse_assign_cinst(struct token);
 struct parser_result parse_jmp_cinst(struct token);
+struct parser_result parse_symbol(struct token);
 bool ainst_val_valid(struct token);
 bool cinst_dest_valid(struct token);
 bool cinst_comp_valid(struct token);
 bool cinst_jmp_valid(struct token);
+bool sinst_val_valid(char *val);
 struct parser_result make_empty_result();
 void print_error(char *header, char *expected, char *found);
 
@@ -43,6 +45,9 @@ struct parser_result parse(char *source_line)
 
         } else if (curr_token.type == char_sequence) {
             return parse_cinst(curr_token);
+
+        } else if (curr_token.type == symbol) {
+            return parse_symbol(curr_token);
 
         } else {
             print_error(
@@ -191,6 +196,54 @@ struct parser_result parse_jmp_cinst(struct token comp)
     return result;
 }
 
+struct parser_result parse_symbol(struct token symbol_token)
+{
+    struct parser_result result = make_empty_result();
+    result.parsed_inst.type = symbol_type;
+
+    int i;
+    int c;
+
+    i = 0;
+
+    while ((c = symbol_token.lexeme[i]) != '\0') {
+        ++i;
+    }
+
+    char *val = malloc((sizeof(char) * i) - 2);
+    int j;
+
+    i = 0;
+    j = 0;
+
+    while ((c = symbol_token.lexeme[i]) != '\0') {
+        ++i;
+
+        if (c == '(' || c == ')')
+            continue;
+
+        val[j] = c;
+        ++j;
+    }
+    
+    if (!sinst_val_valid(val)) {
+        print_error(
+            "Invalid value for symbol",
+            "alphanumeric char sequence",
+            val
+        );
+        result.code = PARSE_ERROR;
+        free(val);
+
+    } else {
+        result.parsed_inst.s_inst.val = val;
+    }
+    
+    free(symbol_token.lexeme);
+    
+    return result;
+}
+
 bool ainst_val_valid(struct token char_seq)
 {
     int c;
@@ -294,6 +347,35 @@ bool cinst_jmp_valid(struct token _token)
     return contains_str(_token.lexeme, valid_jmps, JMPS_COUNT);
 }
 
+bool sinst_val_valid(char *val)
+{
+    bool valid;
+    bool has_alpha;
+    int i;
+    int c;
+
+    has_alpha = false;
+    valid = true;
+    i = 0;
+
+    while ((c = val[i]) != '\0') {
+        if (!isalnum(c) && c != '_') {
+            valid = false;
+            break;
+        }
+
+        if (!has_alpha && isalpha(c)) {
+            has_alpha = true;
+        }
+
+        ++i;
+    }
+    
+    valid = valid && has_alpha;
+
+    return valid;
+}
+
 struct parser_result make_empty_result()
 {
     struct ainst _ainst;
@@ -304,10 +386,14 @@ struct parser_result make_empty_result()
     _cinst.comp = NULL;
     _cinst.jmp = NULL;
 
+    struct sinst _sinst;
+    _sinst.val = NULL;
+
     struct inst _inst;
     _inst.type = none;
     _inst.a_inst = _ainst;
     _inst.c_inst = _cinst;
+    _inst.s_inst = _sinst;
 
     struct parser_result result;
     result.code = PARSE_SUCCESS;
