@@ -11,6 +11,9 @@
 #define ERROR               -1
 #define SUCCESS             0
 
+int collect_symbols();
+int parse_and_translate();
+
 int main(int argc, char **argv)
 {
     if (argc != EXPECTED_ARGS_COUNT) {
@@ -25,6 +28,26 @@ int main(int argc, char **argv)
         return errno;
     }
 
+    collect_symbols();
+    int result = parse_and_translate();
+    
+    close_all();
+
+    return result;
+}
+
+int collect_symbols()
+{
+    // TODO: start parsing file again
+    // TODO: If instruction is symbol, add entry
+    // TODO: If instruction is a-inst with identifier, add entry
+    // TODO: if instruction is c-inst, continue
+    // TODO: seek in file to beginning.
+    return ERROR;
+}
+
+int parse_and_translate()
+{
     while (!is_eof()) {
         char *line = read_line();
 
@@ -43,6 +66,9 @@ int main(int argc, char **argv)
 
         switch (result.parsed_inst.type) {
             case none:
+                continue;
+
+            case symbol_type:
                 continue;
 
             case a_inst_type:
@@ -75,7 +101,6 @@ int main(int argc, char **argv)
         out(bin);
     }
 
-    close_all();
-
     return SUCCESS;
 }
+
