@@ -104,6 +104,14 @@ struct parser_result parse_cinst(struct token initial_char_seq)
         return parse_jmp_cinst(initial_char_seq);
 
     } else {
+        printf("initial char = %s\n", initial_char_seq.lexeme);
+        printf("type = %d\n", expected_separator.type);
+        int i = 0;
+        int c;
+        while ((c = expected_separator.lexeme[i]) != '\0') {
+            printf("c = %d\n", c);
+            ++i;
+        }
         print_error(
             "Error parsing c-instruction",
             "'=' or ';'",
