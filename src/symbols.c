@@ -5,60 +5,115 @@
 #include "symbols.h"
 #include "utils.h"
 
-#define STORE_SIZE 1000000
+#define STORE_SIZE 10000
 
-static int *address_store;
+static struct list_node **address_store;
 
-int hash(char *symbol);
+void store_entry(char *key, int val);
+struct list_node *stored_entry(char *key);
+void increase_address_count();
+int available_address(char *label);
+int hash(char *label);
+
+struct list_node {
+    int addr;
+    char *key;
+    struct list_node *next;
+};
+
+struct list_node *make_empty_node();
 
 void init_store()
 {
     if (address_store == NULL) {
-        address_store = malloc(sizeof(int) * STORE_SIZE);
+        address_store = malloc(
+            sizeof(struct list_node*) * STORE_SIZE
+        );
         for (int i = 0; i < STORE_SIZE; ++i)
-            *(address_store + i) = NULL_ADDRESS;
+            *(address_store + i) = NULL;
     }
 }
 
-void map_symbol(int line_count, char *symbol)
+void map_symbol(char *label, int line_count)
 {
     init_store();
-
-    int i = hash(symbol);
-    assert(i < STORE_SIZE);
-
-    printf("symbol = %s, index = %d, line = %d \n", symbol, i, line_count);
-
-    if (address(symbol) == NULL_ADDRESS) {
-        *(address_store + i) = line_count;
-    }
+    store_entry(label, line_count);
 }
 
-void map_var(char *symbol)
+void map_var(char *label)
 {
     init_store();
+    store_entry(label, available_address(label));
+}
 
-    int i = hash(symbol);
-    assert(i < STORE_SIZE);
+void store_entry(char *key, int val)
+{
+    struct list_node *node = stored_entry(key);
+ 
+    if (node == NULL) {
+        char *key_copy = malloc(sizeof(char) * strlen(key));
+        strcpy(key_copy, key);
 
-    printf("var = %s, index = %d\n", symbol, i);
+        struct list_node *new_node = make_empty_node();
+        new_node->key = key_copy;
+        new_node->addr = val;
 
-    if (address(symbol) == NULL_ADDRESS) {
-        int addr = available_address(symbol);
-        printf("mapping var to addr = %d\n", addr);
-        *(address_store + i) = addr;
+        int i = hash(key);
+        assert(i < STORE_SIZE);
+        *(address_store + i) = new_node;
+
+    } else {
+        if (streq(key, node->key)) {
+            node->addr = val;
+
+        } else {
+            char *key_copy = malloc(sizeof(char) * strlen(key));
+            strcpy(key_copy, key);
+
+            struct list_node *new_node = make_empty_node();
+            new_node->key = key_copy;
+            new_node->addr = val;
+
+            node->next = new_node;
+        }
     }
 }
 
-int address(char *symbol)
+struct list_node *stored_entry(char *key)
+{
+    int i;
+    struct list_node *node;
+
+    i = hash(key);
+    node = *(address_store + i);
+
+    while (node != NULL) {
+        if (streq(node->key, key)) {
+            return node;
+        }
+
+        if (node->next != NULL) {
+            node = node->next;
+        } else {
+            return node;
+        }
+    }
+    
+    return NULL;
+}
+
+int address(char *label)
 {
     if (address_store == NULL) {
         return NULL_ADDRESS;
     }
 
-    int i = hash(symbol);
-    int address = *(address_store + i);
-    return address;
+    struct list_node *node = stored_entry(label);
+
+    if (node != NULL)
+        return node->addr;
+    else
+        return NULL_ADDRESS;
 }
 
 void free_store()
@@ -67,13 +122,25 @@ void free_store()
         return;
     }
 
+    for (int i = 0; i < STORE_SIZE; i++) {
+        struct list_node *node = *(address_store + i);
+        struct list_node *next;
+
+        while (node != NULL) {
+            next = node->next;
+            free(node->key);
+            free(node);
+            node = next;
+        }
+    }
+
     free(address_store);
     address_store = NULL;
 }
 
-int hash(char symbol[])
+int hash(char key[])
 {
-    assert(strlen(symbol) > 0);
+    assert(strlen(key) > 0);
 
     int hashVal;
     int i;
@@ -82,7 +149,7 @@ int hash(char symbol[])
     hashVal = 0;
     i = 0;
 
-    while ((c = symbol[i]) != '\0') {
+    while ((c = key[i]) != '\0') {
         hashVal += c;
         i++;
     }
@@ -93,72 +160,72 @@ int hash(char symbol[])
 #define ADDRESS_START 16
 static int curr_address = ADDRESS_START;
 
-int available_address(char *symbol)
+int available_address(char *label)
 {
-    if (streq(symbol, "SP")) {
+    if (streq(label, "SP")) {
         return 0;
 
-    } else if (streq(symbol, "LCL")) {
+    } else if (streq(label, "LCL")) {
         return 1;
 
-    } else if (streq(symbol, "ARG")) {
+    } else if (streq(label, "ARG")) {
         return 2;
 
-    } else if (streq(symbol, "THIS")) {
+    } else if (streq(label, "THIS")) {
         return 3;
 
-    } else if (streq(symbol, "THAT")) {
+    } else if (streq(label, "THAT")) {
         return 4;
 
-    } else if (streq(symbol, "R0")) {
+    } else if (streq(label, "R0")) {
         return 0;
 
-    } else if (streq(symbol, "R1")) {
+    } else if (streq(label, "R1")) {
         return 1;
 
-    } else if (streq(symbol, "R2")) {
+    } else if (streq(label, "R2")) {
         return 2;
 
-    } else if (streq(symbol, "R3")) {
+    } else if (streq(label, "R3")) {
         return 3;
 
-    } else if (streq(symbol, "R4")) {
+    } else if (streq(label, "R4")) {
         return 4;
 
-    } else if (streq(symbol, "R5")) {
+    } else if (streq(label, "R5")) {
         return 5;
 
-    } else if (streq(symbol, "R7")) {
+    } else if (streq(label, "R7")) {
         return 7;
         
-    } else if (streq(symbol, "R8")) {
+    } else if (streq(label, "R8")) {
         return 8;
 
-    } else if (streq(symbol, "R9")) {
+    } else if (streq(label, "R9")) {
         return 9;
 
-    } else if (streq(symbol, "R10")) {
+    } else if (streq(label, "R10")) {
         return 10;
 
-    } else if (streq(symbol, "R11")) {
+    } else if (streq(label, "R11")) {
         return 11;
 
-    } else if (streq(symbol, "R12")) {
+    } else if (streq(label, "R12")) {
         return 12;
 
-    } else if (streq(symbol, "R13")) {
+    } else if (streq(label, "R13")) {
         return 13;
 
-    } else if (streq(symbol, "R14")) {
+    } else if (streq(label, "R14")) {
         return 14;
 
-    } else if (streq(symbol, "R15")) {
+    } else if (streq(label, "R15")) {
         return 15;
 
-    } else if (streq(symbol, "SCREEN")) {
+    } else if (streq(label, "SCREEN")) {
         return 16384;
 
-    } else if (streq(symbol, "KBD")) {
+    } else if (streq(label, "KBD")) {
         return 24576;
 
     } else {
@@ -173,3 +240,11 @@ void increase_address_count()
     ++curr_address;
 }
 
+struct list_node *make_empty_node()
+{
+    struct list_node *node = malloc(sizeof(struct list_node));
+    node->addr = NULL_ADDRESS;
+    node->key = NULL;
+    node->next = NULL;
+    return node;
+}

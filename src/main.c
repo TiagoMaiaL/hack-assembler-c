@@ -80,7 +80,7 @@ int collect_symbols()
                     char *symbol = parsed_inst.s_inst.val;
 
                     if (address(symbol) == NULL_ADDRESS)
-                        map_symbol(line_count, symbol);
+                        map_symbol(symbol, line_count);
 
                     free(symbol);
 
