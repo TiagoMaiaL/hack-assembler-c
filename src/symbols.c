@@ -161,7 +161,7 @@ int hash(char key[])
     return hashVal % STORE_SIZE;
 }
 
-#define ADDRESS_START 16
+#define ADDRESS_START 15
 static int curr_address = ADDRESS_START;
 
 int available_address(char *label)

@@ -40,10 +40,6 @@ int main(int argc, char **argv)
         return ERROR;
     }
 
-    if (collect_vars() == ERROR) {
-        return ERROR;
-    }
-
     if (parse_and_translate() == ERROR) {
         return ERROR;
     }
@@ -92,48 +88,8 @@ int collect_symbols()
     return SUCCESS;
 }
 
-int collect_vars()
-{
-    line_count = 0;
-    seek_start();
-
-    if (errno != 0) {
-        perror("Seeking to line 0");
-        return ERROR;
-    }
-
-    while (!is_eof()) {
-        char *line = read_line();
-
-        if (strlen(line) == 0)
-            continue;
-
-        struct parser_result result = parse(line);
-        free(line);
-
-        if (result.code != PARSE_SUCCESS) {
-            return ERROR;
-        }
-
-        if (result.parsed_inst.type != a_inst_type)
-            continue;
-
-        char *var = result.parsed_inst.a_inst.val;
-
-        if (is_variable(var)) {
-            map_var(var);
-        }
-
-        free(var);
-    }
-
-    return SUCCESS;
-}
-
-// TODO: Collect vars and then translate
 int parse_and_translate()
 {
-    line_count = 0;
     seek_start();
 
     if (errno != 0) {
@@ -171,6 +127,8 @@ int parse_and_translate()
                     addr_str = NULL;
 
                     if (is_variable(var)) {
+                        map_var(var);
+
                         int addr = address(var);
 
                         assert(addr != NULL_ADDRESS);
@@ -187,8 +145,6 @@ int parse_and_translate()
                     free(var);
                     free(addr_str);
                 }
-                
-                ++line_count;
                 break;
 
             case c_inst_type:
@@ -205,7 +161,6 @@ int parse_and_translate()
                         free(c_inst.jmp);
                     }
                 }
-                ++line_count;
                 break;
         }
 
