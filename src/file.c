@@ -44,8 +44,10 @@ char *read_line()
     ++line_len;
 
     char *buff = malloc(line_len * sizeof(char));
+    if (buff == NULL)
+        abort();
 
-    fgets(buff, line_len + 1, in_file);
+    fgets(buff, line_len, in_file);
 
     return buff;
 }

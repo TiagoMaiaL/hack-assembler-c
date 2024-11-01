@@ -52,7 +52,7 @@ struct parser_result parse(char *source_line)
         } else {
             print_error(
                 "Unexpected token at instruction start",
-                "'@' or 'char_sequence'",
+                "'@', 'char_sequence' or '('",
                 curr_token.lexeme
             );
             free(curr_token.lexeme);
@@ -104,14 +104,6 @@ struct parser_result parse_cinst(struct token initial_char_seq)
         return parse_jmp_cinst(initial_char_seq);
 
     } else {
-        printf("initial char = %s\n", initial_char_seq.lexeme);
-        printf("type = %d\n", expected_separator.type);
-        int i = 0;
-        int c;
-        while ((c = expected_separator.lexeme[i]) != '\0') {
-            printf("c = %d\n", c);
-            ++i;
-        }
         print_error(
             "Error parsing c-instruction",
             "'=' or ';'",

@@ -7,14 +7,13 @@
 
 #define STORE_SIZE 10000
 
-static struct list_node **address_store;
-
 void store_entry(char *key, int val);
 struct list_node *stored_entry(char *key);
 void increase_address_count();
 int available_address(char *label);
 int hash(char *label);
 
+static struct list_node **address_store;
 struct list_node {
     int addr;
     char *key;
@@ -27,10 +26,10 @@ void init_store()
 {
     if (address_store == NULL) {
         address_store = malloc(
-            sizeof(struct list_node*) * STORE_SIZE
+            sizeof(struct list_node *) * STORE_SIZE
         );
         for (int i = 0; i < STORE_SIZE; ++i)
-            *(address_store + i) = NULL;
+            address_store[i] = NULL;
     }
 }
 
@@ -43,7 +42,8 @@ void map_symbol(char *label, int line_count)
 void map_var(char *label)
 {
     init_store();
-    store_entry(label, available_address(label));
+    int address = available_address(label);
+    store_entry(label, address);
 }
 
 void store_entry(char *key, int val)
@@ -51,7 +51,9 @@ void store_entry(char *key, int val)
     struct list_node *node = stored_entry(key);
  
     if (node == NULL) {
-        char *key_copy = malloc(sizeof(char) * strlen(key));
+        char *key_copy = malloc(
+            (sizeof(char) * strlen(key)) + 1
+        );
         strcpy(key_copy, key);
 
         struct list_node *new_node = make_empty_node();
@@ -60,22 +62,22 @@ void store_entry(char *key, int val)
 
         int i = hash(key);
         assert(i < STORE_SIZE);
-        *(address_store + i) = new_node;
+        address_store[i] = new_node;
 
-    } else {
-        if (streq(key, node->key)) {
-            node->addr = val;
+        return;
+    }
 
-        } else {
-            char *key_copy = malloc(sizeof(char) * strlen(key));
-            strcpy(key_copy, key);
+    if (!streq(key, node->key)) {
+        char *key_copy = malloc(
+            (sizeof(char) * strlen(key)) + 1
+        );
+        strcpy(key_copy, key);
 
-            struct list_node *new_node = make_empty_node();
-            new_node->key = key_copy;
-            new_node->addr = val;
+        struct list_node *new_node = make_empty_node();
+        new_node->key = key_copy;
+        new_node->addr = val;
 
-            node->next = new_node;
-        }
+        node->next = new_node;
     }
 }
 
@@ -85,7 +87,8 @@ struct list_node *stored_entry(char *key)
     struct list_node *node;
 
     i = hash(key);
-    node = *(address_store + i);
+    assert(i < STORE_SIZE);
+    node = address_store[i];
 
     while (node != NULL) {
         if (streq(node->key, key)) {
@@ -93,7 +96,8 @@ struct list_node *stored_entry(char *key)
         }
 
         if (node->next != NULL) {
-            node = node->next;
+            struct list_node *prev = node;
+            node = prev->next;
         } else {
             return node;
         }
@@ -123,7 +127,7 @@ void free_store()
     }
 
     for (int i = 0; i < STORE_SIZE; i++) {
-        struct list_node *node = *(address_store + i);
+        struct list_node *node = address_store[i];
         struct list_node *next;
 
         while (node != NULL) {
@@ -242,7 +246,7 @@ void increase_address_count()
 
 struct list_node *make_empty_node()
 {
-    struct list_node *node = malloc(sizeof(struct list_node));
+    struct list_node *node = malloc(sizeof(struct list_node) * 1);
     node->addr = NULL_ADDRESS;
     node->key = NULL;
     node->next = NULL;

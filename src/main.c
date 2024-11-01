@@ -14,7 +14,7 @@
 #define ERROR               -1
 #define SUCCESS             0
 
-static int line_count;
+static unsigned long line_count;
 int collect_symbols();
 int collect_vars();
 int parse_and_translate();
@@ -79,8 +79,7 @@ int collect_symbols()
                 {
                     char *symbol = parsed_inst.s_inst.val;
 
-                    if (address(symbol) == NULL_ADDRESS)
-                        map_symbol(symbol, line_count);
+                    map_symbol(symbol, line_count);
 
                     free(symbol);
 
@@ -128,9 +127,7 @@ int collect_vars()
 
         char *var = result.parsed_inst.a_inst.val;
 
-        if (is_variable(var) &&
-            address(var) == NULL_ADDRESS
-        ) {
+        if (is_variable(var)) {
             map_var(var);
         }
 
@@ -192,7 +189,6 @@ int parse_and_translate()
                     }
 
                     ainst_bin(a_inst, bin);
-                    printf("lexeme = %s, var = %s, bin = %s\n", var, a_inst.val, bin);
                     free(var);
                     // TODO: Free address_str
                 }

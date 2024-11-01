@@ -39,7 +39,8 @@ void lex_line(char *source_line)
 
 bool line_finished()
 {
-    return lexing_line[cursor_index] == '\n';
+    int c = lexing_line[cursor_index];
+    return c == '\n' || '\0';
 }
 
 struct token next_token()
@@ -49,6 +50,7 @@ struct token next_token()
     int token_start;
     int token_end;
 
+    token_end = -1;
     i = cursor_index;
     state = none;
 
