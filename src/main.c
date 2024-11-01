@@ -78,11 +78,8 @@ int collect_symbols()
             case symbol_type:
                 {
                     char *symbol = parsed_inst.s_inst.val;
-
                     map_symbol(symbol, line_count);
-
                     free(symbol);
-
                     break;
                 }
 
@@ -171,9 +168,11 @@ int parse_and_translate()
                 {
                     struct ainst a_inst;
                     char *var;
+                    char *addr_str;
 
                     a_inst = result.parsed_inst.a_inst;
                     var = a_inst.val;
+                    addr_str = NULL;
 
                     if (is_variable(var)) {
                         int addr = address(var);
@@ -181,7 +180,7 @@ int parse_and_translate()
                         assert(addr != NULL_ADDRESS);
 
                         int dc = digit_count(addr) + 1;
-                        char *addr_str = malloc(
+                        addr_str = malloc(
                             sizeof(char) * dc
                         );
                         sprintf(addr_str, "%d", addr);
@@ -190,9 +189,10 @@ int parse_and_translate()
 
                     ainst_bin(a_inst, bin);
                     free(var);
-                    // TODO: Free address_str
+                    free(addr_str);
                 }
-
+                
+                ++line_count;
                 break;
 
             case c_inst_type:
@@ -209,6 +209,7 @@ int parse_and_translate()
                         free(c_inst.jmp);
                     }
                 }
+                ++line_count;
                 break;
         }
 
