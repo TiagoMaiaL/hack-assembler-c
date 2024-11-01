@@ -201,6 +201,28 @@ struct parser_result parse_symbol(struct token symbol_token)
     struct parser_result result = make_empty_result();
     result.parsed_inst.type = symbol_type;
 
+    char *_symbol = symbol_str(symbol_token.lexeme);
+    
+    if (!sinst_val_valid(_symbol)) {
+        print_error(
+            "Invalid value for symbol",
+            "alphanumeric char sequence",
+            symbol_token.lexeme
+        );
+        result.code = PARSE_ERROR;
+        free(_symbol);
+
+    } else {
+        result.parsed_inst.s_inst.val = _symbol;
+    }
+    
+    free(symbol_token.lexeme);
+    
+    return result;
+}
+
+char *symbol_str(char *lexeme)
+{
     int i;
     int c;
     int len;
@@ -208,51 +230,34 @@ struct parser_result parse_symbol(struct token symbol_token)
     i = 0;
     len = 0;
 
-    while ((c = symbol_token.lexeme[i]) != '\0') {
-        // strip whitespaces
+    while ((c = lexeme[i]) != '\0') {
         ++i;
 
-        if (c == ' ')
+        if (c == ' ' || c == '(' || c == ')')
             continue;
 
         ++len;
     }
 
-    // - '(' and ')' delimiters and + '\0'
-    char *val = malloc((sizeof(char) * len) - 2 + 1);
+    char *symbol = malloc((sizeof(char) * len) + 1);
     int j;
 
     i = 0;
     j = 0;
 
-    while ((c = symbol_token.lexeme[i]) != '\0') {
+    while ((c = lexeme[i]) != '\0') {
         ++i;
 
         if (c == '(' || c == ')' || c == ' ')
             continue;
 
-        val[j] = c;
+        symbol[j] = c;
         ++j;
     }
 
-    val[j] = '\0';
-    
-    if (!sinst_val_valid(val)) {
-        print_error(
-            "Invalid value for symbol",
-            "alphanumeric char sequence",
-            val
-        );
-        result.code = PARSE_ERROR;
-        free(val);
+    symbol[j] = '\0';
 
-    } else {
-        result.parsed_inst.s_inst.val = val;
-    }
-    
-    free(symbol_token.lexeme);
-    
-    return result;
+    return symbol;
 }
 
 bool ainst_val_valid(struct token char_seq)

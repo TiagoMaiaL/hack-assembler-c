@@ -10,3 +10,5 @@ struct parser_result
 };
 
 struct parser_result parse(char *source_line);
+// TODO: Rename
+char *symbol_str(char *lexeme);

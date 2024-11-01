@@ -7,6 +7,7 @@
 #include "ainst-bin.h"
 #include "cinst-bin.h"
 #include "file.h"
+#include "lexer.h"
 #include "parser.h"
 #include "symbols.h"
 
@@ -52,45 +53,40 @@ int main(int argc, char **argv)
     return SUCCESS;
 }
 
-// TODO: Use the bare lexer to collect symbols
 int collect_symbols()
 {
     line_count = 0;
 
     while (!is_eof()) {
+        bool is_whitespace = true;
         char *line = read_line();
 
         if (strlen(line) == 0)
             continue;
 
-        struct parser_result result = parse(line);
+        lex_line(line);
+
+        while (!line_finished()) {
+            struct token tk = next_token();
+
+            if (tk.type != whitespace && 
+                tk.type != comment &&
+                tk.type != symbol)
+                is_whitespace = false;
+
+            if (tk.type == symbol) {
+                char *_symbol = symbol_str(tk.lexeme);
+                map_symbol(_symbol, line_count);
+                free(_symbol);
+            }
+
+            free(tk.lexeme);
+        }
+
+        if (!is_whitespace)
+            ++line_count;
+
         free(line);
-
-        if (result.code != PARSE_SUCCESS) {
-            return ERROR;
-        }
-
-        struct inst parsed_inst = result.parsed_inst;
-
-        switch (parsed_inst.type) {
-            case none: continue;
-            
-            case symbol_type:
-                {
-                    char *symbol = parsed_inst.s_inst.val;
-                    map_symbol(symbol, line_count);
-                    free(symbol);
-                    break;
-                }
-
-            case a_inst_type:
-                ++line_count;
-                break;
-
-            case c_inst_type:
-                ++line_count;
-                break;
-        }
     }
 
     return SUCCESS;
