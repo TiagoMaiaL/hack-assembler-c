@@ -42,6 +42,10 @@ void map_symbol(char *label, int line_count)
 void map_var(char *label)
 {
     init_store();
+
+    if (address(label) != NULL_ADDRESS)
+        return;
+
     int address = available_address(label);
     store_entry(label, address);
 }
@@ -161,7 +165,7 @@ int hash(char key[])
     return hashVal % STORE_SIZE;
 }
 
-#define ADDRESS_START 15
+#define ADDRESS_START 16
 static int curr_address = ADDRESS_START;
 
 int available_address(char *label)
