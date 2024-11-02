@@ -21,13 +21,20 @@ C Implementation of the Hack assembler for the Hack computing system described i
 ### Phase 2
 - [x] hash-table for symbols
 - [x] Unit-test hash-table
-- [ ] Symbol parsing phase
-- [ ] Unit-test symbol parsing phase
-- [ ] Symbol substitution phase
-- [ ] Unit-test symbol substitution phase
-- [ ] Test the assembler with programs written in hack asm
+- [x] Symbol parsing phase
+- [x] Unit-test symbol parsing phase
+- [x] Symbol substitution phase
+- [x] Test the assembler with programs written in hack asm
 
 ### Nice to have
+- [ ] Build script
+- [ ] Script to test parsing asm files
+- [ ] Refactor structs and enums to use typedef
+- [ ] Refactor naming
+- [ ] Document main functions
+- [ ] Errors should mention file line
+- [ ] Produce debug output
 - [ ] Colorful test outputs
 - [ ] Test results for all suites in the end
 - [ ] String describing assertions in case of errors
+
