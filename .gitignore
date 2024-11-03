@@ -12,5 +12,9 @@
 # Pre-compiled headers
 **/*.h.gch
 
+# Debug symbols file
+**/*.dSYM
+
 # Build executables
 build/_test
+build/hasm
