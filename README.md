@@ -27,8 +27,8 @@ C Implementation of the Hack assembler for the Hack computing system described i
 - [x] Test the assembler with programs written in hack asm
 
 ### Nice to have
-- [ ] Build script
-- [ ] Script to test parsing asm files
+- [x] Build script
+- [x] Script to test parsing asm files
 - [ ] Refactor structs and enums to use typedef
 - [ ] Refactor naming
 - [ ] Document main functions

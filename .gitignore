@@ -15,6 +15,7 @@
 # Debug symbols file
 **/*.dSYM
 
-# Build executables
+# Build
 build/_test
 build/hasm
+build/artifacts
